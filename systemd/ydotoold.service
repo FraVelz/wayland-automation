@@ -1,0 +1,14 @@
+[Unit]
+Description=ydotool daemon (entrada virtual ratón/teclado)
+Documentation=https://github.com/ReimuNotMoe/ydotool
+After=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/ydotoold
+Restart=on-failure
+RestartSec=2
+Environment=YDOTOOL_SOCKET=/tmp/.ydotool_socket
+
+[Install]
+WantedBy=default.target

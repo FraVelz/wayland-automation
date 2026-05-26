@@ -1,0 +1,12 @@
+{
+  "name": "wayland-automation",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Automatización Wayland (Sway + ydotool)",
+  "scripts": {
+    "lint:md": "markdownlint-cli2 \"**/*.md\" \"!node_modules/**\" \"!env/**\""
+  },
+  "devDependencies": {
+    "markdownlint-cli2": "^0.17.2"
+  }
+}

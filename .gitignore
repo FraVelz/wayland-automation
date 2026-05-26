@@ -1,0 +1,24 @@
+# Python
+env/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+
+# Build / datos locales
+.build/
+bin/wl-find-cursor
+
+# Node / Tauri
+node_modules/
+dist/
+src-tauri/target/
+src-tauri/gen/
+
+# IDE (no incluir configuración de Cursor)
+.cursor/
+
+# Sistema
+.DS_Store
+*.log
