@@ -4,14 +4,18 @@
 set -euo pipefail
 
 PACKAGES=(
+  pkgconf
   webkit2gtk-4.1
   gtk3
+  libsoup3
+  gdk-pixbuf2
   base-devel
   curl
   wget
   file
   openssl
   librsvg
+  patchelf
 )
 
 echo "==> Dependencias Tauri (Arch Linux)"
@@ -25,15 +29,34 @@ else
 fi
 
 echo
-echo "==> Rust (si aún no tienes cargo)"
-if ! command -v cargo >/dev/null 2>&1; then
-  echo "    Instala con: curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh"
-  echo "    Luego: source \"\$HOME/.cargo/env\""
-else
-  echo "    cargo ya disponible: $(cargo --version)"
+echo "==> Comprobando pkg-config"
+missing=0
+for lib in webkit2gtk-4.1 javascriptcoregtk-4.1 soup3.0 gtk+-3.0; do
+  if pkg-config --exists "${lib}" 2>/dev/null; then
+    echo "    OK  ${lib}"
+  else
+    echo "    FALTA  ${lib}" >&2
+    missing=1
+  fi
+done
+
+if [[ "${missing}" -ne 0 ]]; then
+  echo >&2
+  echo "Alguna librería no se detectó. Revisa la instalación o reinicia la sesión." >&2
+  exit 1
 fi
 
 echo
-echo "Listo. Compila la app con:"
-echo "  source \"\$HOME/.cargo/env\"   # si hace falta"
-echo "  pnpm tauri build"
+echo "==> Rust"
+if ! command -v cargo >/dev/null 2>&1; then
+  echo "    Instala: curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh"
+  echo "    Luego: source \"\$HOME/.cargo/env\""
+else
+  echo "    cargo: $(cargo --version)"
+fi
+
+echo
+echo "Listo. Arranca la app con:"
+echo "  source \"\$HOME/.cargo/env\""
+echo "  pnpm install"
+echo "  pnpm tauri dev"

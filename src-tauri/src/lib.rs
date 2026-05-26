@@ -40,6 +40,13 @@ struct DaemonInfo {
     ready_for_mouse: bool,
 }
 
+#[derive(Clone, Serialize)]
+#[serde(rename_all = "snake_case")]
+struct CursorPosition {
+    x: i32,
+    y: i32,
+}
+
 fn project_dir() -> PathBuf {
     PathBuf::from(env!("CARGO_MANIFEST_DIR"))
         .parent()
@@ -55,6 +62,24 @@ fn home_dir() -> PathBuf {
     std::env::var_os("HOME")
         .map(PathBuf::from)
         .unwrap_or_else(|| PathBuf::from("/"))
+}
+
+fn find_wl_find_cursor() -> Result<PathBuf, String> {
+    if let Ok(path) = std::process::Command::new("sh")
+        .arg("-c")
+        .arg("command -v wl-find-cursor")
+        .output()
+    {
+        let stdout = String::from_utf8_lossy(&path.stdout).trim().to_string();
+        if !stdout.is_empty() && Path::new(&stdout).is_file() {
+            return Ok(PathBuf::from(stdout));
+        }
+    }
+    let local = project_dir().join("bin/wl-find-cursor");
+    if local.is_file() {
+        return Ok(local);
+    }
+    Err("wl-find-cursor no encontrado. Ejecuta ./scripts/setup.sh".into())
 }
 
 fn script_path(name: &str) -> Result<PathBuf, String> {
@@ -131,6 +156,39 @@ fn uinput_access() -> String {
         Ok(_) => "Accesible".into(),
         Err(_) => "Sin permisos".into(),
     }
+}
+
+#[tauri::command]
+fn get_cursor_position() -> Result<CursorPosition, String> {
+    if std::env::var_os("WAYLAND_DISPLAY").is_none() {
+        return Err("No hay sesión Wayland activa (WAYLAND_DISPLAY vacío).".into());
+    }
+    let bin = find_wl_find_cursor()?;
+    let output = Command::new(&bin)
+        .arg("-p")
+        .output()
+        .map_err(|e| format!("No se pudo ejecutar wl-find-cursor: {e}"))?;
+    if !output.status.success() {
+        let stderr = String::from_utf8_lossy(&output.stderr);
+        return Err(if stderr.is_empty() {
+            "wl-find-cursor falló".into()
+        } else {
+            stderr.trim().to_string()
+        });
+    }
+    let text = String::from_utf8_lossy(&output.stdout);
+    let mut parts = text.split_whitespace();
+    let x: i32 = parts
+        .next()
+        .ok_or("Salida vacía de wl-find-cursor")?
+        .parse()
+        .map_err(|_| format!("Coordenada X inválida: {}", text.trim()))?;
+    let y: i32 = parts
+        .next()
+        .ok_or("Falta coordenada Y")?
+        .parse()
+        .map_err(|_| format!("Coordenada Y inválida: {}", text.trim()))?;
+    Ok(CursorPosition { x, y })
 }
 
 #[tauri::command]
@@ -282,6 +340,7 @@ pub fn run() {
             child: Arc::new(Mutex::new(None)),
         })
         .invoke_handler(tauri::generate_handler![
+            get_cursor_position,
             get_daemon_info,
             run_script,
             stop_script

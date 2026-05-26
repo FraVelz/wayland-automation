@@ -1,6 +1,6 @@
 # Solución de problemas
 
-## Scripts y permisos (ambas ramas)
+## Scripts y permisos
 
 | Problema | Solución |
 |----------|----------|
@@ -16,30 +16,23 @@
 groups | grep input
 ```
 
-## Rama `pyside`
+## Node / pnpm
 
 | Problema | Solución |
 |----------|----------|
-| `ModuleNotFoundError: PySide6` | `./scripts/activar-entorno.sh` |
-| `QPixmap` / core dumped | `sudo pacman -S qt6-wayland`, reiniciar app |
-| Ventana no abre | Ejecutar desde terminal dentro de Sway (foot) |
-
-## Rama `tauri` — Node / pnpm
-
-| Problema | Solución |
-|----------|----------|
+| `vite: orden no encontrada` al hacer `pnpm tauri dev` | `pnpm install` en la raíz del repo |
 | `ERR_PNPM_IGNORED_BUILDS` | `esbuild: true` en `pnpm-workspace.yaml`, `pnpm install` |
 | `Cannot find name 'process'` en build | `@types/node` instalado (ya en el proyecto) |
 
-## Rama `tauri` — Rust / compilación
+## Rust / compilación
 
 | Problema | Solución |
 |----------|----------|
 | `cargo not found` | `source ~/.cargo/env` o instalar rustup |
-| `webkit2gtk-4.1` not found | `./scripts/setup-tauri-deps.sh` |
-| `javascriptcoregtk-4.1` not found | Mismo script (incluido en webkit2gtk) |
+| `webkit2gtk-4.1` not found | `./scripts/setup-tauri-deps.sh` y `./scripts/check-tauri-deps.sh` |
+| `javascriptcoregtk-4.1` not found | Mismo script (viene con el paquete `webkit2gtk-4.1`) |
 
-## Rama `tauri` — ejecución
+## Ejecución Tauri
 
 | Problema | Solución |
 |----------|----------|

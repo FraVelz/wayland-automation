@@ -1,6 +1,6 @@
 # Instalación
 
-## 1. Base (todas las ramas)
+## 1. Base
 
 Desde la raíz del repositorio:
 
@@ -15,7 +15,6 @@ El script:
 2. Añade el usuario al grupo **`input`**.
 3. Compila `wl-find-cursor` en `bin/`.
 4. Instala unidad systemd user para `ydotoold`.
-5. En rama **`pyside`**: crea `env/` e instala PySide6.
 
 **Importante:** si acabas de entrar en `input`, cierra sesión y vuelve a entrar.
 
@@ -24,35 +23,22 @@ El script:
 | Paquete | Uso |
 |---------|-----|
 | `ydotool` | Control ratón/teclado |
-| `grim`, `slurp` | Captura Wayland (color con `-c`) |
+| `grim`, `slurp` | Captura Wayland (color con `-c` en CLI) |
 | `imagemagick` | Color RGB/HEX del píxel |
 | `wayland-protocols`, `base-devel`, `git` | Compilar wl-find-cursor |
-| `python`, `qt6-wayland` | GUI PySide en Wayland |
 
-## 3. Rama `pyside` — GUI Python
-
-```bash
-git checkout pyside
-./scripts/activar-entorno.sh
-```
-
-Manual:
-
-```bash
-python3 -m venv env && source env/bin/activate
-pip install -r requirements.txt
-python main.py
-```
-
-## 4. Rama `tauri` — GUI de escritorio
+## 3. GUI Tauri (escritorio)
 
 ### Dependencias de sistema (Arch)
 
+Sin estos paquetes verás `webkit2gtk-4.1 was not found` al compilar.
+
 ```bash
 ./scripts/setup-tauri-deps.sh
+./scripts/check-tauri-deps.sh
 ```
 
-Instala principalmente `webkit2gtk-4.1` y `gtk3`.
+Instala `webkit2gtk-4.1` (incluye `javascriptcoregtk-4.1`), `gtk3`, `libsoup3`, `pkgconf`, etc.
 
 ### Rust
 
@@ -76,7 +62,7 @@ pnpm tauri dev      # ventana de escritorio
 pnpm tauri build    # ejecutable en src-tauri/target/release/
 ```
 
-## 5. Permisos
+## 4. Permisos
 
 | Requisito | Motivo |
 |-----------|--------|
@@ -89,7 +75,7 @@ pnpm tauri build    # ejecutable en src-tauri/target/release/
 groups | grep input
 ```
 
-## 6. Atajo Sway (opcional)
+## 5. Atajo Sway (opcional)
 
 ```text
 bindsym $mod+m exec /ruta/al/repo/bin/wl-find-cursor

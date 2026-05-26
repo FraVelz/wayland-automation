@@ -1,6 +1,10 @@
 import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
-import type { DaemonInfo, ScriptFinishedEvent, ScriptOutputEvent } from "./types";
+import type { CursorPosition, DaemonInfo, ScriptFinishedEvent, ScriptOutputEvent } from "./types";
+
+export async function getCursorPosition(): Promise<CursorPosition> {
+  return invoke<CursorPosition>("get_cursor_position");
+}
 
 export async function getDaemonInfo(): Promise<DaemonInfo> {
   return invoke<DaemonInfo>("get_daemon_info");
