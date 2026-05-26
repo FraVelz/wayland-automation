@@ -52,9 +52,12 @@ pnpm tauri build
 
 ```bash
 pnpm lint       # ESLint + TypeScript
+pnpm doctor     # React Doctor (calidad React)
 pnpm lint:md    # markdownlint
 pnpm format     # Prettier
 ```
+
+Configuración de React Doctor: `react-doctor.config.json`.
 
 ## Documentación técnica
 
