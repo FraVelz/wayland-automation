@@ -24,7 +24,7 @@ export function HotkeyInput({
   const { setCapturing } = useHotkeyCapture();
   const [focused, setFocused] = useState(false);
   const [preview, setPreview] = useState("");
-  const boxRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const onChangeRef = useRef(onChange);
   onChangeRef.current = onChange;
 
@@ -35,32 +35,32 @@ export function HotkeyInput({
 
   useEffect(() => {
     if (disabled || !autoFocus) return;
-    const t = window.setTimeout(() => boxRef.current?.focus(), 50);
+    const t = window.setTimeout(() => inputRef.current?.focus(), 80);
     return () => window.clearTimeout(t);
-  }, [disabled, autoFocus]);
+  }, [disabled, autoFocus, id]);
 
   const handleKeyDown = useCallback(
-    (event: KeyboardEvent) => {
-      if (disabled || document.activeElement !== boxRef.current) return;
-
+    (event: React.KeyboardEvent<HTMLInputElement>) => {
+      if (disabled) return;
       event.preventDefault();
       event.stopPropagation();
 
-      if (event.key === "Escape") {
+      const native = event.nativeEvent;
+
+      if (native.key === "Escape") {
         setPreview("");
-        boxRef.current?.blur();
         return;
       }
-      if (event.key === "Backspace" || event.key === "Delete") {
+      if (native.key === "Backspace" || native.key === "Delete") {
         onChangeRef.current("");
         setPreview("");
         return;
       }
 
-      const live = hotkeyPreviewFromKeyboardEvent(event);
+      const live = hotkeyPreviewFromKeyboardEvent(native);
       setPreview(live);
 
-      const combo = hotkeyFromKeyboardEvent(event);
+      const combo = hotkeyFromKeyboardEvent(native);
       if (combo) {
         onChangeRef.current(combo);
       }
@@ -68,22 +68,28 @@ export function HotkeyInput({
     [disabled],
   );
 
-  useEffect(() => {
-    document.addEventListener("keydown", handleKeyDown, true);
-    return () => document.removeEventListener("keydown", handleKeyDown, true);
-  }, [handleKeyDown]);
-
-  const display = focused && preview ? preview : value;
+  const display = preview || value;
 
   return (
     <label className="flex flex-col gap-1 text-sm" htmlFor={id}>
       <span className="text-gray-400">{label}</span>
-      <div
-        ref={boxRef}
+      <input
+        ref={inputRef}
         id={id}
-        role="textbox"
+        type="text"
+        readOnly
         tabIndex={disabled ? -1 : 0}
-        aria-label={label}
+        className={
+          disabled
+            ? "input cursor-not-allowed font-mono opacity-50"
+            : focused
+              ? "input cursor-default font-mono ring-2 ring-accent ring-offset-2 ring-offset-surface"
+              : "input cursor-pointer font-mono ring-1 ring-accent/60"
+        }
+        value={display}
+        placeholder={focused ? "Pulsa las teclas…" : "Clic aquí y pulsa el atajo"}
+        disabled={disabled}
+        onKeyDown={handleKeyDown}
         onFocus={() => {
           setFocused(true);
           setPreview("");
@@ -92,25 +98,10 @@ export function HotkeyInput({
           setFocused(false);
           setPreview("");
         }}
-        className={
-          disabled
-            ? "input cursor-not-allowed font-mono opacity-50 outline-none"
-            : focused
-              ? "input cursor-default font-mono outline-none ring-2 ring-accent ring-offset-2 ring-offset-surface"
-              : "input cursor-pointer font-mono outline-none ring-1 ring-accent/50"
-        }
-      >
-        {display ? (
-          <span className="text-accent">{display}</span>
-        ) : (
-          <span className="text-gray-500">
-            {focused ? "Pulsa las teclas…" : "Clic aquí para capturar atajo"}
-          </span>
-        )}
-      </div>
+      />
       {focused && !disabled ? (
         <span className="text-xs text-amber-200/90">
-          Escuchando: la combinación se actualiza en vivo. Esc sale, Supr borra.
+          Capturando: cada pulsación actualiza el atajo. Esc limpia vista, Supr borra.
         </span>
       ) : null}
       {hint ? <span className="text-xs text-gray-500">{hint}</span> : null}

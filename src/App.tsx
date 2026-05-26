@@ -98,6 +98,7 @@ function AppInner() {
     enabled: hotkeysEnabled,
     paused: isCapturing,
     onError: (msg) => append(`⚠ ${msg}\n`),
+    onStatus: (msg) => append(`⌨ ${msg}\n`),
   });
 
   const run = useCallback(

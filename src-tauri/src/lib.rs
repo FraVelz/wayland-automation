@@ -1,3 +1,5 @@
+mod hotkeys;
+
 use std::io::{BufRead, BufReader};
 use std::path::{Path, PathBuf};
 use std::process::{Child, Command, Stdio};
@@ -547,17 +549,24 @@ fn stop_script(state: State<'_, ProcessState>) -> Result<(), String> {
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
+    let hotkey_state = Arc::new(hotkeys::HotkeyListenerState::new());
+
     tauri::Builder::default()
-        .plugin(tauri_plugin_global_shortcut::Builder::new().build())
         .manage(ProcessState {
             child: Arc::new(Mutex::new(None)),
+        })
+        .manage(hotkey_state.clone())
+        .setup(move |app| {
+            hotkeys::start_listener(app.handle().clone(), hotkey_state);
+            Ok(())
         })
         .invoke_handler(tauri::generate_handler![
             get_cursor_position,
             get_daemon_info,
             run_script,
             run_macro,
-            stop_script
+            stop_script,
+            hotkeys::set_hotkey_bindings
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
