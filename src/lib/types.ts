@@ -1,4 +1,4 @@
-export type TabId = "cursor" | "mouse" | "daemon" | "system";
+export type TabId = "cursor" | "mouse" | "macros" | "daemon" | "system";
 
 export interface DaemonInfo {
   running: boolean;
@@ -21,7 +21,19 @@ export interface ScriptFinishedEvent {
   status: string;
 }
 
+export interface CursorColor {
+  hex: string;
+  rgb: string;
+  css_rgb: string;
+  hsl: string;
+  r: number;
+  g: number;
+  b: number;
+}
+
 export interface CursorPosition {
   x: number;
   y: number;
+  color: CursorColor | null;
+  color_error: string | null;
 }

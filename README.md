@@ -20,7 +20,7 @@ Automatización en **Arch Linux + Sway**: posición del cursor, movimiento del r
 git clone https://github.com/FraVelz/wayland-automation.git
 cd wayland-automation
 chmod +x scripts/*.sh
-./scripts/setup.sh
+./scripts/setup.sh   # no uses sudo en el script completo; pedirá sudo internamente
 ```
 
 Si te añaden al grupo `input`, **cierra sesión y vuelve a entrar**.

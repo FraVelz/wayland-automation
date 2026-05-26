@@ -24,6 +24,7 @@ Requisitos previos: [instalacion.md](instalacion.md) §4.
 
 | Comando | Función |
 |---------|---------|
+| `get_cursor_position` | Coordenadas, color HEX/RGB/CSS/HSL del píxel bajo el cursor |
 | `get_daemon_info` | Socket, PID, grupo input, uinput, autostart |
 | `run_script` | Ejecuta `scripts/<nombre>` con argumentos |
 | `stop_script` | Termina proceso en curso |
@@ -44,7 +45,6 @@ Eventos al frontend:
 
 ## Diferencias con `pyside`
 
-- Sin botones de **color del píxel** en Cursor (solo coordenadas).
 - Stack pnpm + ESLint + React Doctor.
 - Depende de Rust y WebKitGTK para compilar.
 

@@ -1,5 +1,6 @@
 import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
+import type { MacroStep } from "./macros";
 import type { CursorPosition, DaemonInfo, ScriptFinishedEvent, ScriptOutputEvent } from "./types";
 
 export async function getCursorPosition(): Promise<CursorPosition> {
@@ -16,6 +17,10 @@ export async function runScript(script: string, args: string[] = []): Promise<vo
 
 export async function stopScript(): Promise<void> {
   return invoke("stop_script");
+}
+
+export async function runMacro(steps: MacroStep[]): Promise<void> {
+  return invoke("run_macro", { steps });
 }
 
 export function onScriptOutput(handler: (line: string) => void): Promise<() => void> {

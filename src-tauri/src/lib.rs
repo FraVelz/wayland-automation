@@ -3,7 +3,7 @@ use std::path::{Path, PathBuf};
 use std::process::{Child, Command, Stdio};
 use std::sync::{Arc, Mutex};
 
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use tauri::{AppHandle, Emitter, State};
 
 const YDOTOOL_SOCKET: &str = "/tmp/.ydotool_socket";
@@ -42,9 +42,106 @@ struct DaemonInfo {
 
 #[derive(Clone, Serialize)]
 #[serde(rename_all = "snake_case")]
+struct CursorColor {
+    hex: String,
+    rgb: String,
+    css_rgb: String,
+    hsl: String,
+    r: u8,
+    g: u8,
+    b: u8,
+}
+
+#[derive(Clone, Serialize)]
+#[serde(rename_all = "snake_case")]
 struct CursorPosition {
     x: i32,
     y: i32,
+    color: Option<CursorColor>,
+    color_error: Option<String>,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(tag = "type", rename_all = "snake_case")]
+enum MacroStep {
+    Delay { ms: u64 },
+    MoveAbsolute { x: i32, y: i32 },
+    MoveRelative { dx: i32, dy: i32 },
+    Click { button: String },
+}
+
+fn require_ydotoold_running() -> Result<(), String> {
+    if !Path::new(YDOTOOL_SOCKET).exists() {
+        return Err("ydotoold no está activo. Inicia el daemon desde la pestaña Daemon.".into());
+    }
+    if !in_input_group() {
+        return Err("No perteneces al grupo input. Ejecuta scripts/setup.sh y cierra sesión.".into());
+    }
+    if uinput_access() != "Accesible" {
+        return Err(format!(
+            "/dev/uinput: {}. Revisa permisos con scripts/setup.sh.",
+            uinput_access()
+        ));
+    }
+    Ok(())
+}
+
+fn ydotool(args: &[&str]) -> Result<(), String> {
+    let output = Command::new("ydotool")
+        .args(args)
+        .env("YDOTOOL_SOCKET", YDOTOOL_SOCKET)
+        .output()
+        .map_err(|e| format!("No se pudo ejecutar ydotool: {e}"))?;
+    if output.status.success() {
+        return Ok(());
+    }
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    Err(if stderr.trim().is_empty() {
+        format!("ydotool falló: {}", args.join(" "))
+    } else {
+        stderr.trim().to_string()
+    })
+}
+
+fn click_code(button: &str) -> Result<&'static str, String> {
+    match button {
+        "left" => Ok("0xC0"),
+        "right" => Ok("0xC1"),
+        "middle" => Ok("0xC2"),
+        _ => Err(format!("Botón de clic desconocido: {button}")),
+    }
+}
+
+fn run_macro_steps(steps: &[MacroStep]) -> Result<(), String> {
+    require_ydotoold_running()?;
+    if steps.is_empty() {
+        return Err("La macro no tiene pasos.".into());
+    }
+    for step in steps {
+        match step {
+            MacroStep::Delay { ms } => {
+                if *ms > 0 {
+                    std::thread::sleep(std::time::Duration::from_millis(*ms));
+                }
+            }
+            MacroStep::MoveAbsolute { x, y } => {
+                ydotool(&[
+                    "mousemove",
+                    "--absolute",
+                    &x.to_string(),
+                    &y.to_string(),
+                ])?;
+            }
+            MacroStep::MoveRelative { dx, dy } => {
+                ydotool(&["mousemove", &dx.to_string(), &dy.to_string()])?;
+            }
+            MacroStep::Click { button } => {
+                let code = click_code(button)?;
+                ydotool(&["click", code])?;
+            }
+        }
+    }
+    Ok(())
 }
 
 fn project_dir() -> PathBuf {
@@ -158,6 +255,105 @@ fn uinput_access() -> String {
     }
 }
 
+fn parse_rgb_pixel(raw: &str) -> Option<(u8, u8, u8)> {
+    let start = raw.find('(')? + 1;
+    let end = raw.find(')')?;
+    let mut parts = raw[start..end].split(',').map(str::trim);
+    let r: u8 = parts.next()?.parse().ok()?;
+    let g: u8 = parts.next()?.parse().ok()?;
+    let b: u8 = parts.next()?.parse().ok()?;
+    Some((r, g, b))
+}
+
+fn rgb_to_hsl(r: u8, g: u8, b: u8) -> (u16, u8, u8) {
+    let r = r as f64 / 255.0;
+    let g = g as f64 / 255.0;
+    let b = b as f64 / 255.0;
+    let max = r.max(g).max(b);
+    let min = r.min(g).min(b);
+    let l = (max + min) / 2.0;
+
+    if (max - min).abs() < f64::EPSILON {
+        return (0, 0, (l * 100.0).round() as u8);
+    }
+
+    let d = max - min;
+    let s = if l < 0.5 {
+        d / (max + min)
+    } else {
+        d / (2.0 - max - min)
+    };
+
+    let h = if (max - r).abs() < f64::EPSILON {
+        ((g - b) / d + if g < b { 6.0 } else { 0.0 }) / 6.0
+    } else if (max - g).abs() < f64::EPSILON {
+        ((b - r) / d + 2.0) / 6.0
+    } else {
+        ((r - g) / d + 4.0) / 6.0
+    };
+
+    ((h * 360.0).round() as u16, (s * 100.0).round() as u8, (l * 100.0).round() as u8)
+}
+
+fn get_pixel_color(x: i32, y: i32) -> Result<CursorColor, String> {
+    let tmp = std::env::temp_dir().join(format!("wa-pixel-{}-{}.png", std::process::id(), x));
+    let geom = format!("{x},{y} 1x1");
+
+    let grim = Command::new("grim")
+        .args(["-g", &geom])
+        .arg(&tmp)
+        .output()
+        .map_err(|e| format!("No se pudo ejecutar grim: {e}"))?;
+    if !grim.status.success() {
+        let _ = std::fs::remove_file(&tmp);
+        let stderr = String::from_utf8_lossy(&grim.stderr);
+        return Err(if stderr.trim().is_empty() {
+            "grim falló al capturar el píxel".into()
+        } else {
+            stderr.trim().to_string()
+        });
+    }
+
+    let tmp_str = tmp.to_string_lossy().into_owned();
+    let magick = Command::new("magick")
+        .args([
+            tmp_str.as_str(),
+            "-format",
+            "%[hex:u]|%[pixel:p{0,0}]",
+            "info:",
+        ])
+        .output()
+        .map_err(|e| format!("No se pudo ejecutar magick: {e}"))?;
+    let _ = std::fs::remove_file(&tmp);
+
+    if !magick.status.success() {
+        let stderr = String::from_utf8_lossy(&magick.stderr);
+        return Err(if stderr.trim().is_empty() {
+            "magick falló al leer el píxel".into()
+        } else {
+            stderr.trim().to_string()
+        });
+    }
+
+    let text = String::from_utf8_lossy(&magick.stdout);
+    let mut parts = text.trim().split('|');
+    let hex_raw = parts.next().unwrap_or("").trim();
+    let pixel = parts.next().unwrap_or("").trim();
+    let (r, g, b) = parse_rgb_pixel(pixel)
+        .ok_or_else(|| format!("Formato de color no reconocido: {pixel}"))?;
+    let (h, s, l) = rgb_to_hsl(r, g, b);
+
+    Ok(CursorColor {
+        hex: format!("#{hex_raw}"),
+        rgb: format!("{r}, {g}, {b}"),
+        css_rgb: format!("rgb({r}, {g}, {b})"),
+        hsl: format!("{h}°, {s}%, {l}%"),
+        r,
+        g,
+        b,
+    })
+}
+
 #[tauri::command]
 fn get_cursor_position() -> Result<CursorPosition, String> {
     if std::env::var_os("WAYLAND_DISPLAY").is_none() {
@@ -188,7 +384,18 @@ fn get_cursor_position() -> Result<CursorPosition, String> {
         .ok_or("Falta coordenada Y")?
         .parse()
         .map_err(|_| format!("Coordenada Y inválida: {}", text.trim()))?;
-    Ok(CursorPosition { x, y })
+
+    let (color, color_error) = match get_pixel_color(x, y) {
+        Ok(c) => (Some(c), None),
+        Err(e) => (None, Some(e)),
+    };
+
+    Ok(CursorPosition {
+        x,
+        y,
+        color,
+        color_error,
+    })
 }
 
 #[tauri::command]
@@ -324,6 +531,11 @@ fn run_script(
 }
 
 #[tauri::command]
+fn run_macro(steps: Vec<MacroStep>) -> Result<(), String> {
+    run_macro_steps(&steps)
+}
+
+#[tauri::command]
 fn stop_script(state: State<'_, ProcessState>) -> Result<(), String> {
     let mut guard = state.child.lock().map_err(|e| e.to_string())?;
     if let Some(mut child) = guard.take() {
@@ -336,6 +548,7 @@ fn stop_script(state: State<'_, ProcessState>) -> Result<(), String> {
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_global_shortcut::Builder::new().build())
         .manage(ProcessState {
             child: Arc::new(Mutex::new(None)),
         })
@@ -343,6 +556,7 @@ pub fn run() {
             get_cursor_position,
             get_daemon_info,
             run_script,
+            run_macro,
             stop_script
         ])
         .run(tauri::generate_context!())

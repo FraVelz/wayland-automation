@@ -1,3 +1,4 @@
+import { CursorColorPanel } from "./CursorColorPanel";
 import { ValueLabel } from "./ValueLabel";
 import { useCursorPosition } from "../hooks/useCursorPosition";
 
@@ -23,13 +24,19 @@ export function TabCursor() {
       <div className="card">
         <h2 className="font-semibold">Coordenadas del cursor</h2>
         <p className="mt-1 text-sm text-gray-400">
-          Valores en vivo desde wl-find-cursor (sin panel de salida).
+          Posición en vivo con wl-find-cursor y color del píxel seleccionado.
         </p>
 
         <div className="mt-4 grid grid-cols-2 gap-4">
           <ValueLabel id="cursor-x" title="Posición X" value={display(position?.x)} />
           <ValueLabel id="cursor-y" title="Posición Y" value={display(position?.y)} />
         </div>
+
+        <CursorColorPanel
+          color={position?.color}
+          error={position?.color_error}
+          loading={loading}
+        />
 
         {error ? (
           <p className="mt-3 text-sm text-red-400" role="alert">
