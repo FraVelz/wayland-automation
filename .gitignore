@@ -12,6 +12,8 @@ bin/wl-find-cursor
 
 # Node / Tauri
 node_modules/
+package-lock.json
+npm-shrinkwrap.json
 dist/
 src-tauri/target/
 src-tauri/gen/
