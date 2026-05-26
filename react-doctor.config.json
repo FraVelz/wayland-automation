@@ -1,0 +1,16 @@
+{
+  "adoptExistingLintConfig": true,
+  "lint": true,
+  "deadCode": true,
+  "ignore": {
+    "files": [
+      "dist/**",
+      "src-tauri/**",
+      "node_modules/**",
+      "env/**",
+      "scripts/**",
+      "docs/**",
+      "bin/**"
+    ]
+  }
+}

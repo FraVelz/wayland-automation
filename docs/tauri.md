@@ -38,4 +38,15 @@ pnpm install
 pnpm tauri dev
 ```
 
+## React Doctor
+
+Auditoría de calidad React (rendimiento, accesibilidad, arquitectura):
+
+```bash
+pnpm doctor
+pnpm doctor:verbose
+```
+
+Config: `react-doctor.config.json` (escanea `src/`, ignora `src-tauri/` y `dist/`).
+
 Volver al [índice](overview.md).
