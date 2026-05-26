@@ -10,9 +10,8 @@
     "preview": "vite preview",
     "tauri": "tauri",
     "lint": "eslint . && tsc -b --noEmit",
-    "doctor": "react-doctor . -y",
-    "doctor:verbose": "react-doctor . -y --verbose",
-    "lint:md": "markdownlint-cli2 \"**/*.md\" \"!node_modules/**\" \"!env/**\"",
+    "react:doctor": "react-doctor . --full --verbose",
+    "lint:md": "markdownlint-cli2 \"**/*.md\" \"!node_modules/**\" \"!env/**\" \"!.cursor/**\" \"!.build/**\"",
     "format": "prettier --write \"src/**/*.{ts,tsx,css}\" \"*.{json,js,ts}\""
   },
   "dependencies": {

@@ -37,4 +37,4 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm lint
-      - run: pnpm doctor
+      - run: pnpm react:doctor

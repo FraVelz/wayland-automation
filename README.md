@@ -1,76 +1,105 @@
-# Automatización Wayland (Sway)
+# Wayland Automation (Sway)
 
-Herramientas para ver la posición del cursor, mover el ratón y gestionar `ydotoold` en **Arch Linux** con **Sway**.
+Automatización en **Arch Linux + Sway**: posición del cursor, movimiento del ratón y gestión de `ydotoold`.
 
-Esta rama (`tauri`) usa **Tauri 2 + React + TypeScript + Tailwind CSS**. La versión PySide6 está en la rama [`pyside`](https://github.com/FraVelz/wayland-automation/tree/pyside).
+Repositorio: [github.com/FraVelz/wayland-automation](https://github.com/FraVelz/wayland-automation)
 
-## Ramas
+## ¿Qué incluye?
 
-| Rama | Interfaz |
-|------|----------|
-| `pyside` | PySide6 (por defecto) |
-| `tauri` | Tauri + React |
+- **Scripts shell** en `scripts/` (núcleo compartido por todas las ramas)
+- **Dos interfaces gráficas** en ramas distintas de git
 
-Ver [BRANCHES.md](BRANCHES.md).
+| Rama | Interfaz | Arranque habitual |
+|------|----------|-------------------|
+| **`pyside`** (por defecto) | PySide6 / Qt nativo | `./scripts/activar-entorno.sh` |
+| **`tauri`** | Tauri 2 + React + TypeScript + Tailwind | `pnpm tauri dev` |
 
-## Requisitos (rama tauri)
+Detalle de ramas: [BRANCHES.md](BRANCHES.md).
 
-- Todo lo de `pyside`: Sway, `scripts/setup.sh`, grupo `input`
-- [Node.js](https://nodejs.org/) 20+ y [pnpm](https://pnpm.io/) (`corepack enable`)
-- [Rust](https://www.rust-lang.org/tools/install) (`rustup`; luego `source ~/.cargo/env`)
-- Librerías GTK/WebKit en Arch: `./scripts/setup-tauri-deps.sh`
+## Requisitos comunes
 
-## Instalación del sistema
+- Arch Linux con sesión **Sway** (Wayland)
+- `sudo` solo la primera vez (`./scripts/setup.sh`)
+- Grupo **`input`** y `ydotoold` activo para **mover** el ratón
+
+## Empezar (cualquier rama)
 
 ```bash
+git clone https://github.com/FraVelz/wayland-automation.git
+cd wayland-automation
 chmod +x scripts/*.sh
 ./scripts/setup.sh
 ```
 
-Cierra sesión si te añadieron al grupo `input`.
+Si te añaden al grupo `input`, **cierra sesión y vuelve a entrar**.
 
-## Desarrollo (interfaz Tauri)
+Comprobar el daemon:
 
 ```bash
-pnpm install
-pnpm tauri dev
+./scripts/ydotoold.sh status
 ```
 
-Compilar release:
+## Interfaz PySide (`pyside`)
+
+```bash
+git checkout pyside
+./scripts/activar-entorno.sh
+```
+
+Requisitos extra: Python 3, venv en `env/`, `qt6-wayland` (lo instala `setup.sh`).
+
+## Interfaz Tauri (`tauri`)
+
+```bash
+git checkout tauri
+corepack enable
+pnpm install
+./scripts/setup-tauri-deps.sh   # WebKit GTK (sudo, una vez)
+source ~/.cargo/env             # si usas rustup
+pnpm tauri dev                  # ventana de escritorio
+```
+
+Compilar ejecutable:
 
 ```bash
 pnpm tauri build
+# → src-tauri/target/release/ (y bundle/ si aplica)
 ```
 
-## Diferencias respecto a PySide
+Requisitos extra: Node 20+, **pnpm**, **Rust**, `webkit2gtk-4.1`.
 
-- Misma lógica detrás: los scripts en `scripts/` no cambian.
-- La pestaña **Cursor** solo muestra **coordenadas** (sin color del píxel / `-c`).
-- No se incluye configuración del editor Cursor (carpeta `.cursor/` ignorada en git).
-
-## Calidad de código
+## Scripts desde terminal (sin GUI)
 
 ```bash
-pnpm lint       # ESLint + TypeScript
-pnpm doctor     # React Doctor (calidad React)
-pnpm lint:md    # markdownlint
-pnpm format     # Prettier
+./scripts/cursor.sh              # coordenadas del cursor
+./scripts/mover_raton.sh           # mueve el ratón (requiere ydotoold)
+./scripts/ydotoold.sh start        # inicia el daemon
+./scripts/ydotoold.sh check        # diagnóstico
 ```
 
-Configuración de React Doctor: `react-doctor.config.json`.
+## Documentación
 
-## Documentación técnica
+| Nivel | Enlace |
+|-------|--------|
+| Índice técnico | [docs/overview.md](docs/overview.md) |
+| Instalación sistema | [docs/instalacion.md](docs/instalacion.md) |
+| Scripts shell | [docs/scripts.md](docs/scripts.md) |
+| Problemas | [docs/solucion-problemas.md](docs/solucion-problemas.md) |
 
-[docs/overview.md](docs/overview.md) · [docs/tauri.md](docs/tauri.md)
+## Calidad de código (rama `tauri`)
 
-## Problemas frecuentes
+```bash
+pnpm lint
+pnpm react:doctor
+pnpm lint:md
+pnpm format
+```
 
-| Qué ves | Qué hacer |
-|---------|-----------|
-| `ERR_PNPM_IGNORED_BUILDS` (esbuild) | En `pnpm-workspace.yaml` debe estar `esbuild: true`; luego `pnpm install` |
-| `cargo not found` | `source ~/.cargo/env` o instala Rust con rustup |
-| `webkit2gtk-4.1` / `javascriptcoregtk` not found | `./scripts/setup-tauri-deps.sh` (pide sudo) |
-| `ydotoold no está activo` | `./scripts/ydotoold.sh start` |
-| El ratón no se mueve | Cierra sesión tras `./scripts/setup.sh` |
+Ver [docs/calidad.md](docs/calidad.md).
 
-Más: [docs/solucion-problemas.md](docs/solucion-problemas.md).
+## Enlaces
+
+- [ydotool](https://github.com/ReimuNotMoe/ydotool)
+- [wl-find-cursor](https://github.com/cjacker/wl-find-cursor)
+- [Tauri](https://tauri.app/)
+- [React Doctor](https://react.doctor/)
