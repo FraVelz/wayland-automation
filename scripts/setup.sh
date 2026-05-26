@@ -17,17 +17,9 @@ if [[ "${EUID}" -ne 0 ]]; then
     echo
 fi
 
-PACKAGES=(ydotool grim slurp imagemagick wayland-protocols git base-devel python qt6-wayland)
+PACKAGES=(ydotool grim slurp imagemagick wayland-protocols git base-devel)
 echo "==> Instalando paquetes: ${PACKAGES[*]}"
 sudo pacman -S --needed --noconfirm "${PACKAGES[@]}"
-
-echo
-echo "==> Entorno Python (PySide6)"
-if [[ ! -d "${PROJECT_DIR}/env" ]]; then
-    python3 -m venv "${PROJECT_DIR}/env"
-fi
-"${PROJECT_DIR}/env/bin/pip" install -q -r "${PROJECT_DIR}/requirements.txt"
-echo "    Dependencias instaladas en env/"
 
 echo
 echo "==> Añadiendo usuario al grupo 'input' (acceso a /dev/uinput)"
@@ -69,6 +61,7 @@ echo
 echo "Próximos pasos:"
 echo "  1. Si acabas de unirte al grupo input → cierra sesión y vuelve a entrar"
 echo "  2. Verifica el daemon:  ./scripts/ydotoold.sh status"
-echo "  3. Aplicación GUI:     ./scripts/activar-entorno.sh"
+echo "  3. GUI Tauri:          pnpm install && ./scripts/setup-tauri-deps.sh"
+echo "                        source ~/.cargo/env && pnpm tauri dev"
 echo
 echo "Documentación: README.md"

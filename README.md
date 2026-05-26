@@ -2,8 +2,6 @@
 
 Automatización en **Arch Linux + Sway**: posición del cursor, movimiento del ratón y gestión de `ydotoold`.
 
-Repositorio: [github.com/FraVelz/wayland-automation](https://github.com/FraVelz/wayland-automation)
-
 ## ¿Qué incluye?
 
 - **Scripts shell** en `scripts/` (núcleo del proyecto)
@@ -62,12 +60,12 @@ pnpm tauri build
 
 ## Documentación
 
-| Nivel | Enlace |
-|-------|--------|
-| Índice técnico | [docs/overview.md](docs/overview.md) |
-| Instalación | [docs/instalacion.md](docs/instalacion.md) |
-| Scripts shell | [docs/scripts.md](docs/scripts.md) |
-| Problemas | [docs/solucion-problemas.md](docs/solucion-problemas.md) |
+| Nivel          | Enlace                                                   |
+| -------------- | -------------------------------------------------------- |
+| Índice técnico | [docs/overview.md](docs/overview.md)                     |
+| Instalación    | [docs/instalacion.md](docs/instalacion.md)               |
+| Scripts shell  | [docs/scripts.md](docs/scripts.md)                       |
+| Problemas      | [docs/solucion-problemas.md](docs/solucion-problemas.md) |
 
 ## Calidad de código
 
@@ -80,9 +78,9 @@ pnpm format
 
 Ver [docs/calidad.md](docs/calidad.md).
 
-## Enlaces
+## Autor y licencia
 
-- [ydotool](https://github.com/ReimuNotMoe/ydotool)
-- [wl-find-cursor](https://github.com/cjacker/wl-find-cursor)
-- [Tauri](https://tauri.app/)
-- [React Doctor](https://react.doctor/)
+| | |
+| --- | --- |
+| **Autor** | [Fravelz](https://github.com/FraVelz) |
+| **Licencia** | [Apache License 2.0](LICENSE) |
