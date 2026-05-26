@@ -1,21 +1,35 @@
 import { CursorColorPanel } from "./CursorColorPanel";
+import { HotkeyInput } from "./ui/HotkeyInput";
 import { ValueLabel } from "./ValueLabel";
-import { useCursorPosition } from "../hooks/useCursorPosition";
+import type { CursorPosition } from "../lib/types";
 
 const DEFAULT_INTERVAL_MS = 150;
 
-export function TabCursor() {
-  const {
-    position,
-    error,
-    loading,
-    watching,
-    intervalMs,
-    setIntervalMs,
-    refresh,
-    toggleWatch,
-  } = useCursorPosition();
+interface TabCursorProps {
+  position: CursorPosition | null;
+  error: string | null;
+  loading: boolean;
+  watching: boolean;
+  intervalMs: number;
+  setIntervalMs: (ms: number) => void;
+  refresh: () => Promise<void>;
+  toggleWatch: () => void;
+  stopHotkey: string;
+  onStopHotkeyChange: (hotkey: string) => void;
+}
 
+export function TabCursor({
+  position,
+  error,
+  loading,
+  watching,
+  intervalMs,
+  setIntervalMs,
+  refresh,
+  toggleWatch,
+  stopHotkey,
+  onStopHotkeyChange,
+}: TabCursorProps) {
   const display = (n: number | undefined) =>
     loading && !position ? "…" : n !== undefined ? String(n) : "—";
 
@@ -75,6 +89,16 @@ export function TabCursor() {
               }
             />
           </label>
+        </div>
+
+        <div className="mt-4 max-w-xs">
+          <HotkeyInput
+            id="cursor-stop-hotkey"
+            label="Atajo para detener tiempo real"
+            value={stopHotkey}
+            onChange={onStopHotkeyChange}
+            hint="Global: con tiempo real activo, pulsa el atajo (fuera de este campo) para detenerlo."
+          />
         </div>
       </div>
     </div>

@@ -31,6 +31,10 @@ export function useCursorPosition() {
     return () => window.clearInterval(id);
   }, [watching, intervalMs, refresh]);
 
+  const stopWatch = useCallback(() => {
+    setWatching(false);
+  }, []);
+
   const toggleWatch = useCallback(() => {
     setWatching((w) => !w);
   }, []);
@@ -44,5 +48,6 @@ export function useCursorPosition() {
     setIntervalMs,
     refresh,
     toggleWatch,
+    stopWatch,
   };
 }

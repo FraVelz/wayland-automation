@@ -16,6 +16,19 @@ export interface Macro {
 }
 
 const STORAGE_KEY = "wa-macros";
+const HOTKEYS_ENABLED_KEY = "wa-hotkeys-enabled";
+
+export function loadHotkeysEnabled(): boolean {
+  try {
+    return localStorage.getItem(HOTKEYS_ENABLED_KEY) !== "false";
+  } catch {
+    return true;
+  }
+}
+
+export function saveHotkeysEnabled(enabled: boolean): void {
+  localStorage.setItem(HOTKEYS_ENABLED_KEY, String(enabled));
+}
 
 export function createMacroId(): string {
   return crypto.randomUUID();
