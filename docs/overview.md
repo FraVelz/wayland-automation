@@ -1,27 +1,49 @@
 # Documentación técnica
 
-Índice de la documentación interna del proyecto. El [README](../README.md) está pensado para empezar rápido; aquí está el funcionamiento real y los detalles de implementación.
+Índice del proyecto **Wayland Automation**.
 
-## Contenido
+El [README](../README.md) es la guía rápida; aquí está el detalle por tema.
 
-| Documento | Descripción |
-|-----------|-------------|
-| [estructura.md](estructura.md) | Árbol del proyecto y qué hace cada archivo |
-| [arquitectura.md](arquitectura.md) | Cómo se relacionan la GUI, los scripts y las herramientas Wayland |
-| [aplicacion.md](aplicacion.md) | Código Python: entrada, servicios e interfaz PySide6 (rama `pyside`) |
-| [tauri.md](tauri.md) | Rama `tauri`: Tauri, React, TypeScript y Tailwind |
-| [scripts.md](scripts.md) | Scripts shell: cursor, ratón y daemon |
-| [daemon.md](daemon.md) | `ydotoold`, permisos, systemd y diagnóstico |
-| [instalacion.md](instalacion.md) | `scripts/setup.sh`, paquetes Arch y configuración del sistema |
-| [solucion-problemas.md](solucion-problemas.md) | Tabla ampliada de errores y soluciones |
+## Índice
+
+| Documento | Contenido |
+|-----------|-----------|
+| [estructura.md](estructura.md) | Árbol del proyecto por rama |
+| [arquitectura.md](arquitectura.md) | Capas: GUI → scripts → Wayland |
+| [scripts.md](scripts.md) | Uso de `scripts/*.sh` |
+| [daemon.md](daemon.md) | `ydotoold`, permisos, systemd |
+| [instalacion.md](instalacion.md) | `setup.sh`, paquetes Arch, Tauri |
+| [aplicacion.md](aplicacion.md) | Rama `pyside` (PySide6) |
+| [tauri.md](tauri.md) | Rama `tauri` (React + Rust) |
+| [calidad.md](calidad.md) | Lint, Prettier, React Doctor, CI |
+| [solucion-problemas.md](solucion-problemas.md) | Errores frecuentes |
 | [referencias.md](referencias.md) | Enlaces externos |
 
-## Flujo resumido
+## Flujo común (scripts)
 
-```
-Usuario → main.py / GUI → scripts/*.sh → ydotool / wl-find-cursor / grim
+Todas las interfaces delegan en los mismos scripts:
+
+```text
+GUI (PySide o Tauri)  →  scripts/*.sh  →  wl-find-cursor / ydotool / grim
                               ↓
-                         ydotoold → /dev/uinput
+                         ydotoold  →  /dev/uinput
 ```
 
-Para el detalle de cada capa, sigue los enlaces de la tabla.
+## Flujo por rama
+
+### `pyside`
+
+```text
+activar-entorno.sh → main.py → app/ → ProcessRunner → scripts/
+```
+
+### `tauri`
+
+```text
+pnpm tauri dev → WebView + React (src/) → invoke Rust → scripts/
+```
+
+## Repositorio
+
+- GitHub: `FraVelz/wayland-automation`
+- Gestor de paquetes Node (rama `tauri`): **pnpm** (`packageManager` en `package.json`)

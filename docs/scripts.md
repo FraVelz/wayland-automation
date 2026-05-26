@@ -1,56 +1,64 @@
 # Scripts shell
 
-Todos los scripts `.sh` están en `scripts/` y comparten funciones en `scripts/lib/common.sh`.
+Todos los `.sh` están en `scripts/` y cargan `scripts/lib/common.sh`.
 
-## Instalación y aplicación
+## Instalación del sistema
 
 ```bash
-./scripts/setup.sh           # instalar paquetes y permisos (una vez)
-./scripts/activar-entorno.sh # abrir la GUI
+chmod +x scripts/*.sh
+./scripts/setup.sh
 ```
+
+| Script | Función |
+|--------|---------|
+| `setup.sh` | Paquetes Arch, grupo `input`, compila `wl-find-cursor`, venv + PySide6, systemd user |
+| `setup-tauri-deps.sh` | `webkit2gtk-4.1`, `gtk3`, etc. (compilar Tauri) |
+| `activar-entorno.sh` | **Solo `pyside`**: crea `env/` y ejecuta `main.py` |
 
 ## Daemon (`ydotoold.sh`)
 
 ```bash
-./scripts/ydotoold.sh start      # iniciar
-./scripts/ydotoold.sh stop       # detener
-./scripts/ydotoold.sh restart    # reiniciar
-./scripts/ydotoold.sh status     # estado y permisos
-./scripts/ydotoold.sh enable     # arranque automático al iniciar sesión
-./scripts/ydotoold.sh check      # diagnóstico completo
-./scripts/ydotoold.sh logs       # ver logs
+./scripts/ydotoold.sh start
+./scripts/ydotoold.sh stop
+./scripts/ydotoold.sh restart
+./scripts/ydotoold.sh status
+./scripts/ydotoold.sh enable
+./scripts/ydotoold.sh check
+./scripts/ydotoold.sh logs
 ```
 
-Detalle de permisos y systemd: [daemon.md](daemon.md).
+Más: [daemon.md](daemon.md).
 
 ## Cursor (`cursor.sh`)
 
-Usa `wl-find-cursor`; con `-c` añade `grim` e ImageMagick.
+Requiere `wl-find-cursor` y sesión Wayland.
 
 ```bash
-./scripts/cursor.sh                  # coordenadas, una lectura
-./scripts/cursor.sh -w               # coordenadas en tiempo real
-./scripts/cursor.sh -c               # coordenadas + color, una lectura
-./scripts/cursor.sh -w -c            # coordenadas + color en tiempo real
-./scripts/cursor.sh -w -i 0.05       # actualización cada 50 ms
-./scripts/cursor.sh --json -c        # {"x":1373,"y":882,"hex":"#1C1B22","rgb":"..."}
+./scripts/cursor.sh                  # una lectura
+./scripts/cursor.sh -w               # tiempo real
+./scripts/cursor.sh -w -i 0.05       # intervalo 50 ms
+./scripts/cursor.sh --json           # JSON sin color
 ```
 
-Salida con color:
+Con color del píxel (`-c`, usa `grim` + ImageMagick):
 
+```bash
+./scripts/cursor.sh -c
+./scripts/cursor.sh -w -c
+./scripts/cursor.sh --json -c
 ```
-x=1373 y=882  HEX=#1C1B22  RGB=srgb(28,27,34)
-```
+
+La GUI de la rama **tauri** no expone `-c`; la de **pyside** sí.
 
 ## Mover ratón (`mover_raton.sh`)
 
 Requiere `ydotoold` activo.
 
 ```bash
-./scripts/mover_raton.sh                      # 100 px a la derecha
-./scripts/mover_raton.sh --dx 0 --dy -50        # 50 px arriba
-./scripts/mover_raton.sh --x 500 --y 300        # posición absoluta
-./scripts/mover_raton.sh --delay 0              # sin espera
+./scripts/mover_raton.sh
+./scripts/mover_raton.sh --dx 0 --dy -50
+./scripts/mover_raton.sh --x 500 --y 300
+./scripts/mover_raton.sh --delay 0
 ```
 
 Volver al [índice](overview.md).

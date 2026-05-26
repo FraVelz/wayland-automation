@@ -1,52 +1,55 @@
-# Rama Tauri (React + TypeScript)
+# Rama Tauri
+
+App de **escritorio** con Tauri 2, React 19, TypeScript, Tailwind y backend Rust.
 
 ## Estructura
 
 ```text
-src/              # Frontend React + Tailwind
-src-tauri/        # Backend Rust (comandos Tauri)
-scripts/          # Mismos scripts shell que en pyside
+src/           → UI React (pestañas, log, formularios)
+src-tauri/     → Rust: ejecutar scripts, estado del daemon
+scripts/       → Misma automatización que pyside
 ```
 
-## Comandos Tauri (Rust)
+## Arranque
+
+| Modo | Comando | Resultado |
+|------|---------|-----------|
+| Desarrollo | `pnpm tauri dev` | Ventana nativa + hot reload del frontend |
+| Solo web | `pnpm dev` | Vite en navegador (sin Tauri) |
+| Release | `pnpm tauri build` | Binario en `src-tauri/target/release/` |
+
+Requisitos previos: [instalacion.md](instalacion.md) §4.
+
+## Comandos Rust (`invoke`)
 
 | Comando | Función |
 |---------|---------|
-| `get_daemon_info` | Estado de ydotoold, grupo input, uinput |
-| `run_script` | Ejecuta un script en `scripts/` y emite salida por eventos |
-| `stop_script` | Termina el proceso en curso |
+| `get_daemon_info` | Socket, PID, grupo input, uinput, autostart |
+| `run_script` | Ejecuta `scripts/<nombre>` con argumentos |
+| `stop_script` | Termina proceso en curso |
 
-Eventos hacia el frontend:
+Eventos al frontend:
 
-- `script-output` — línea de stdout/stderr
-- `script-finished` — código de salida
+- `script-output` — línea de salida
+- `script-finished` — código y estado
 
 ## Frontend
 
-- `src/App.tsx` — pestañas y orquestación
-- `src/hooks/useScriptRunner.ts` — escucha eventos y lanza scripts
-- `src/hooks/useDaemonStatus.ts` — polling cada 5 s
+| Ruta | Rol |
+|------|-----|
+| `src/App.tsx` | Pestañas y orquestación |
+| `src/hooks/useScriptRunner.ts` | Ejecución y log |
+| `src/hooks/useDaemonStatus.ts` | Polling daemon (5 s) |
+| `src/components/*` | Cursor, Ratón, Daemon, Sistema |
 
-## Cursor sin color
+## Diferencias con `pyside`
 
-La rama `tauri` no expone botones con `-c` (color del píxel). Solo coordenadas una vez o en tiempo real (`cursor.sh` / `cursor.sh -w`).
+- Sin botones de **color del píxel** en Cursor (solo coordenadas).
+- Stack pnpm + ESLint + React Doctor.
+- Depende de Rust y WebKitGTK para compilar.
 
-## Desarrollo
+## Calidad
 
-```bash
-pnpm install
-pnpm tauri dev
-```
-
-## React Doctor
-
-Auditoría de calidad React (rendimiento, accesibilidad, arquitectura):
-
-```bash
-pnpm doctor
-pnpm doctor:verbose
-```
-
-Config: `react-doctor.config.json` (escanea `src/`, ignora `src-tauri/` y `dist/`).
+Ver [calidad.md](calidad.md).
 
 Volver al [índice](overview.md).

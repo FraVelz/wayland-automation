@@ -1,8 +1,8 @@
-# Instalación y configuración del sistema
+# Instalación
 
-## scripts/setup.sh
+## 1. Base (todas las ramas)
 
-Ejecutar una vez desde la raíz del proyecto:
+Desde la raíz del repositorio:
 
 ```bash
 chmod +x scripts/*.sh
@@ -11,42 +11,88 @@ chmod +x scripts/*.sh
 
 El script:
 
-1. Instala paquetes con `pacman` (pide `sudo`).
-2. Crea `env/` e instala PySide6 desde `requirements.txt`.
-3. Añade el usuario al grupo `input`.
-4. Compila `wl-find-cursor` en `bin/`.
-5. Copia la unidad systemd de usuario para `ydotoold`.
+1. Instala paquetes con `pacman` (sudo).
+2. Añade el usuario al grupo **`input`**.
+3. Compila `wl-find-cursor` en `bin/`.
+4. Instala unidad systemd user para `ydotoold`.
+5. En rama **`pyside`**: crea `env/` e instala PySide6.
 
-## Paquetes instalados
+**Importante:** si acabas de entrar en `input`, cierra sesión y vuelve a entrar.
+
+## 2. Paquetes de `setup.sh`
 
 | Paquete | Uso |
 |---------|-----|
-| `ydotool` | Control de ratón y teclado |
-| `grim` | Captura de pantalla Wayland |
-| `slurp` | Selección de región (útil con grim) |
+| `ydotool` | Control ratón/teclado |
+| `grim`, `slurp` | Captura Wayland (color con `-c`) |
 | `imagemagick` | Color RGB/HEX del píxel |
-| `wayland-protocols` | Compilar wl-find-cursor |
-| `qt6-wayland` | Plugin Wayland de Qt para la GUI |
-| `python`, `base-devel`, `git` | Entorno y compilación |
+| `wayland-protocols`, `base-devel`, `git` | Compilar wl-find-cursor |
+| `python`, `qt6-wayland` | GUI PySide en Wayland |
 
-## Permisos en Arch Linux
+## 3. Rama `pyside` — GUI Python
+
+```bash
+git checkout pyside
+./scripts/activar-entorno.sh
+```
+
+Manual:
+
+```bash
+python3 -m venv env && source env/bin/activate
+pip install -r requirements.txt
+python main.py
+```
+
+## 4. Rama `tauri` — GUI de escritorio
+
+### Dependencias de sistema (Arch)
+
+```bash
+./scripts/setup-tauri-deps.sh
+```
+
+Instala principalmente `webkit2gtk-4.1` y `gtk3`.
+
+### Rust
+
+```bash
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+source ~/.cargo/env
+rustup default stable
+```
+
+### Node y pnpm
+
+```bash
+corepack enable
+pnpm install
+```
+
+### Desarrollo y release
+
+```bash
+pnpm tauri dev      # ventana de escritorio
+pnpm tauri build    # ejecutable en src-tauri/target/release/
+```
+
+## 5. Permisos
 
 | Requisito | Motivo |
 |-----------|--------|
-| Grupo `input` | `/dev/uinput` para ydotoold |
-| Sesión Wayland | Scripts enlazados a Sway |
-| ydotoold corriendo | Comunicación con ydotool |
+| Grupo `input` | `/dev/uinput` |
+| Sesión Sway | `WAYLAND_DISPLAY` |
+| `ydotoold` en marcha | Mover el ratón |
 
-Si `scripts/setup.sh` te añadió a `input`, reinicia la sesión gráfica antes de usar el movimiento del ratón.
-
-## Atajo opcional en Sway
-
-Para resaltar la posición del cursor (ejecuta `wl-find-cursor`):
-
-```
-bindsym $mod+m exec /ruta/al/proyecto/bin/wl-find-cursor
+```bash
+./scripts/ydotoold.sh check
+groups | grep input
 ```
 
-Sustituye `/ruta/al/proyecto` por la ruta real del repositorio.
+## 6. Atajo Sway (opcional)
+
+```text
+bindsym $mod+m exec /ruta/al/repo/bin/wl-find-cursor
+```
 
 Volver al [índice](overview.md).

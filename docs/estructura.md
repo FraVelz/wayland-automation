@@ -1,64 +1,84 @@
 # Estructura del proyecto
 
-```
-python/
+El repositorio tiene **dos ramas** con distinto frontend; el backend shell es común.
+
+## Compartido (ambas ramas)
+
+```text
+wayland-automation/
 ├── README.md
-├── main.py                    # Punto de entrada
-├── requirements.txt           # PySide6
-│
-├── app/                       # Código Python
-│   ├── config.py              # Rutas del proyecto
-│   ├── services/
-│   │   ├── commands.py        # Construye comandos shell
-│   │   └── runner.py          # Ejecuta procesos en segundo plano
-│   └── ui/
-│       ├── theme.py           # Tema oscuro (Qt StyleSheet)
-│       ├── widgets.py         # Componentes reutilizables
-│       └── main_window.py     # Ventana principal
-│
-├── scripts/                   # Todos los scripts shell
-│   ├── setup.sh               # Instalación del sistema
-│   ├── activar-entorno.sh     # Crea env/ y lanza la GUI
+├── BRANCHES.md
+├── docs/
+├── scripts/
+│   ├── setup.sh              # Instalación sistema + PySide en env/
+│   ├── setup-tauri-deps.sh     # WebKit GTK para compilar Tauri (Arch)
+│   ├── activar-entorno.sh      # Solo rama pyside: lanza GUI Python
 │   ├── cursor.sh
 │   ├── mover_raton.sh
 │   ├── ydotoold.sh
 │   └── lib/common.sh
-│
 ├── bin/wl-find-cursor
 ├── systemd/ydotoold.service
-└── env/                       # Entorno virtual (creado por activar-entorno.sh)
+├── package.json              # pnpm: lint MD; en tauri también frontend
+├── pnpm-lock.yaml
+├── pnpm-workspace.yaml       # allowBuilds (pnpm 11)
+└── .gitignore
 ```
 
-## Instalación y entrada
+## Rama `pyside`
 
-| Archivo | Para qué sirve | Cuándo usarlo |
-|---------|----------------|---------------|
-| `scripts/setup.sh` | Instala paquetes Arch, permisos, compila `wl-find-cursor` e instala PySide6 en `env/` | Una sola vez |
-| `main.py` | Lanza la aplicación PySide6 | Tras activar `env/` |
-| `scripts/activar-entorno.sh` | Crea `env/` si no existe y ejecuta `main.py` | Forma recomendada de abrir la app |
-| `app/` | Lógica de la GUI (ui + services) | Código Python del proyecto |
+```text
+├── main.py
+├── requirements.txt          # PySide6
+├── app/
+│   ├── config.py
+│   ├── services/             # commands, runner, daemon_info
+│   └── ui/                   # main_window, theme, widgets, daemon_panel
+└── env/                      # venv Python (generado, no en git)
+```
 
-## Scripts de automatización
+| Entrada | Uso |
+|---------|-----|
+| `scripts/setup.sh` | Una vez: paquetes, permisos, wl-find-cursor, PySide en `env/` |
+| `scripts/activar-entorno.sh` | Abrir la GUI |
+| `main.py` | Entrada directa con venv activo |
 
-| Archivo | Para qué sirve | Depende de |
-|---------|----------------|------------|
-| `scripts/ydotoold.sh` | Gestiona el daemon que permite mover el ratón y simular teclado | `ydotool`, grupo `input`, sesión gráfica |
-| `scripts/cursor.sh` | Coordenadas del cursor y, con `-c`, color HEX/RGB (una lectura o tiempo real) | `wl-find-cursor`; con `-c` también `grim` + `imagemagick` |
-| `scripts/mover_raton.sh` | Mueve el ratón (relativo o absoluto) | `ydotoold` activo |
-| `scripts/lib/common.sh` | Código compartido (buscar herramientas, leer coordenadas, capturar color) | Lo cargan los demás scripts; no ejecutar directamente |
+## Rama `tauri`
 
-## Binarios y servicios
+```text
+├── index.html
+├── vite.config.ts
+├── tsconfig*.json
+├── eslint.config.js
+├── react-doctor.config.json
+├── tailwind.config.js
+├── src/                      # React
+│   ├── App.tsx
+│   ├── components/
+│   ├── hooks/
+│   └── lib/
+├── src-tauri/                # Rust + Tauri
+│   ├── src/lib.rs            # run_script, get_daemon_info
+│   ├── tauri.conf.json
+│   └── Cargo.toml
+├── dist/                     # build frontend (generado)
+└── node_modules/
+```
 
-| Archivo | Para qué sirve |
-|---------|----------------|
-| `bin/wl-find-cursor` | Consulta a Sway la posición del cursor. Wayland no lo expone de forma estándar |
-| `systemd/ydotoold.service` | Plantilla que `scripts/setup.sh` copia a `~/.config/systemd/user/` para arranque automático |
+| Entrada | Uso |
+|---------|-----|
+| `pnpm install` | Dependencias Node |
+| `pnpm tauri dev` | App de escritorio en desarrollo |
+| `pnpm tauri build` | Ejecutable release |
+| `scripts/setup-tauri-deps.sh` | Librerías GTK/WebKit (sudo) |
 
-## Carpetas auxiliares
+## Carpetas ignoradas
 
 | Carpeta | Qué es |
 |---------|--------|
-| `.build/` | Clon de `wl-find-cursor` usado solo durante `./scripts/setup.sh`. No hace falta tocarla |
-| `env/` | Entorno virtual de Python con PySide6 |
+| `.build/` | Clon temporal para compilar wl-find-cursor |
+| `env/` | Entorno virtual Python (`pyside`) |
+| `src-tauri/target/` | Artefactos Rust (`tauri`) |
+| `node_modules/`, `dist/` | Frontend (`tauri`) |
 
 Volver al [índice](overview.md).

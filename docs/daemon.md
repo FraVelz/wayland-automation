@@ -28,6 +28,6 @@ ls -l /dev/uinput
 ./scripts/ydotoold.sh status
 ```
 
-Tras añadirte al grupo `input` con `scripts/setup.sh`, **cierra sesión y vuelve a entrar** para que el grupo tenga efecto.
+Tras añadirte al grupo `input` con `scripts/setup.sh`, **cierra sesión y vuelve a entrar**.
 
 Volver al [índice](overview.md).

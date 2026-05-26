@@ -38,6 +38,12 @@ python main.py
 
 ## Wayland nativo
 
-La app está pensada para ejecutarse en Sway sin depender de XWayland. Si falla el plugin Wayland de Qt, el respaldo `xcb` puede intentar XWayland; en ese caso conviene instalar `qt6-wayland` (`scripts/setup.sh` ya lo incluye).
+La app está pensada para Sway sin depender de XWayland.
+
+Si falla el plugin Wayland de Qt, el respaldo `xcb` puede usar XWayland.
+
+Instala `qt6-wayland` (`setup.sh` lo incluye).
+
+Solo en la rama **`pyside`**. La alternativa Tauri está en [tauri.md](tauri.md).
 
 Volver al [índice](overview.md).

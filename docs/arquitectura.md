@@ -1,36 +1,57 @@
 # Arquitectura
 
-## Capas
+## Principio
 
+La lógica Wayland vive en **scripts shell** y herramientas del sistema.
+
+Las GUIs solo construyen argumentos, ejecutan procesos y muestran salida.
+
+```text
+                    ┌─────────────────┐
+                    │  PySide (pyside) │
+                    │  o Tauri (tauri) │
+                    └────────┬────────┘
+                             │ subprocess / invoke
+                    ┌────────▼────────┐
+                    │   scripts/*.sh   │
+                    └────────┬────────┘
+           ┌─────────────────┼─────────────────┐
+           ▼                 ▼                 ▼
+   wl-find-cursor        ydotool          grim + magick
+   (coordenadas)            │            (color, -c)
+                            ▼
+                       ydotoold → /dev/uinput
 ```
-main.py / app/ ──► scripts/*.sh ──► herramientas Wayland
-cursor.sh ───────► wl-find-cursor (+ grim/imagemagick con -c)
-mover_raton.sh ──► ydotool ──► ydotoold ──► /dev/uinput
-ydotoold.sh ─────► systemd --user o proceso en segundo plano
-scripts/setup.sh ► instala todo lo anterior en Arch Linux
-```
 
-## Lectura del cursor y color
+## Lectura del cursor
 
-1. `cursor.sh` llama a `wl-find-cursor` para obtener `(x, y)` vía la API de Sway.
-2. Con la opción `-c`, `common.sh` captura un píxel con `grim` (formato de geometría Sway: `"X,Y 1x1"`) y extrae HEX/RGB con ImageMagick.
-
-No se usa X11 ni XWayland para las coordenadas.
+1. `cursor.sh` → `wl-find-cursor` → coordenadas `(x, y)` vía Sway.
+2. Con `-c` (CLI o GUI **pyside**): `grim` captura 1×1 px + ImageMagick → HEX/RGB.
+3. Rama **tauri**: la GUI solo usa coordenadas (`-w` sin `-c`).
 
 ## Movimiento del ratón
 
-1. `mover_raton.sh` invoca `ydotool` con desplazamiento relativo (`--dx`, `--dy`) o posición absoluta (`--x`, `--y`).
-2. `ydotool` envía órdenes al socket `/tmp/.ydotool_socket`.
-3. `ydotoold` las traduce a eventos en `/dev/uinput` (requiere grupo `input`).
+1. `mover_raton.sh` → `ydotool` (relativo o absoluto).
+2. Socket `/tmp/.ydotool_socket` → `ydotoold` → `/dev/uinput`.
+3. Requiere grupo `input` y daemon activo.
 
-Sin `ydotoold` activo, las lecturas de cursor pueden funcionar pero el movimiento fallará.
+## Capa PySide (`pyside`)
 
-## Aplicación gráfica
+- `CommandBuilder` arma `argv` de cada script.
+- `ProcessRunner` (`QProcess`) emite líneas al panel de log.
+- `get_daemon_info()` consulta socket, systemd, grupo `input`, `/dev/uinput`.
+- `QTimer` actualiza el estado del daemon cada 5 s.
 
-- `MainWindow` construye la UI y delega en `CommandBuilder` la línea de comando de cada script.
-- `ProcessRunner` ejecuta procesos en segundo plano y vuelca stdout/stderr al panel de log.
-- Un `QTimer` periódico comprueba si existe el socket de `ydotoold` para actualizar el indicador de estado.
+## Capa Tauri (`tauri`)
 
-La GUI no reimplementa la lógica Wayland: es una capa sobre los mismos scripts que la terminal.
+- React: pestañas Cursor, Ratón, Daemon, Sistema.
+- Rust (`lib.rs`): `run_script`, `stop_script`, `get_daemon_info`.
+- Eventos Tauri: `script-output`, `script-finished`.
+- `pnpm tauri dev` abre ventana nativa (WebKitGTK en Linux).
+
+## Instalación
+
+- `scripts/setup.sh` — base para todas las ramas.
+- `scripts/setup-tauri-deps.sh` — solo necesario para compilar Tauri en Arch.
 
 Volver al [índice](overview.md).
