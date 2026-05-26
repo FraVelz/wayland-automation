@@ -73,13 +73,7 @@ export default function App() {
       </nav>
 
       <main className="min-h-0 flex-1 overflow-y-auto">
-        {tab === "cursor" && (
-          <TabCursor
-            disabled={running}
-            onOnce={() => run("cursor.sh", [], "Coordenadas (una lectura)")}
-            onWatch={() => run("cursor.sh", ["-w"], "Coordenadas en tiempo real", true)}
-          />
-        )}
+        {tab === "cursor" && <TabCursor />}
         {tab === "mouse" && (
           <TabMouse
             info={info}
@@ -112,7 +106,7 @@ export default function App() {
         )}
       </main>
 
-      <LogPanel lines={log} onClear={() => setLog([])} />
+      {tab !== "cursor" ? <LogPanel lines={log} onClear={() => setLog([])} /> : null}
 
       <footer className="flex justify-end">
         <button

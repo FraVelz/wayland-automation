@@ -20,3 +20,8 @@ export interface ScriptFinishedEvent {
   code: number;
   status: string;
 }
+
+export interface CursorPosition {
+  x: number;
+  y: number;
+}
