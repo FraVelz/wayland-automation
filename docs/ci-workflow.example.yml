@@ -1,0 +1,31 @@
+# Copiar a .github/workflows/lint.yml tras: gh auth refresh -s workflow
+
+name: Lint
+
+on:
+  push:
+    branches: [pyside, tauri]
+  pull_request:
+    branches: [pyside, tauri]
+
+jobs:
+  markdown:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - run: npm ci || npm install
+      - run: npm run lint:md
+
+  frontend:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/tauri' || github.head_ref == 'tauri'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - run: npm ci || npm install
+      - run: npm run lint
