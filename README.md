@@ -17,7 +17,8 @@ Ver [BRANCHES.md](BRANCHES.md).
 
 - Todo lo de `pyside`: Sway, `scripts/setup.sh`, grupo `input`
 - [Node.js](https://nodejs.org/) 20+ y [pnpm](https://pnpm.io/) (`corepack enable`)
-- [Rust](https://www.rust-lang.org/tools/install) (para compilar Tauri)
+- [Rust](https://www.rust-lang.org/tools/install) (`rustup`; luego `source ~/.cargo/env`)
+- Librerías GTK/WebKit en Arch: `./scripts/setup-tauri-deps.sh`
 
 ## Instalación del sistema
 
@@ -64,7 +65,8 @@ pnpm format     # Prettier
 | Qué ves | Qué hacer |
 |---------|-----------|
 | `ERR_PNPM_IGNORED_BUILDS` (esbuild) | En `pnpm-workspace.yaml` debe estar `esbuild: true`; luego `pnpm install` |
-| `cargo not found` | Instala Rust: `rustup default stable` |
+| `cargo not found` | `source ~/.cargo/env` o instala Rust con rustup |
+| `webkit2gtk-4.1` / `javascriptcoregtk` not found | `./scripts/setup-tauri-deps.sh` (pide sudo) |
 | `ydotoold no está activo` | `./scripts/ydotoold.sh start` |
 | El ratón no se mueve | Cierra sesión tras `./scripts/setup.sh` |
 
