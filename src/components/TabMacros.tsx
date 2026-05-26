@@ -7,14 +7,24 @@ import {
   type Macro,
   type MacroStep,
 } from "../lib/macros";
-import { useMacroHotkeys } from "../hooks/useMacroHotkeys";
-import { useMacros } from "../hooks/useMacros";
+import { HotkeyInput } from "./ui/HotkeyInput";
 import type { DaemonInfo } from "../lib/types";
 
 interface TabMacrosProps {
   info: DaemonInfo | null;
   disabled: boolean;
+  hotkeysEnabled: boolean;
+  onHotkeysEnabledChange: (enabled: boolean) => void;
   onLog: (line: string) => void;
+  macros: Macro[];
+  addMacro: () => void;
+  removeMacro: (id: string) => void;
+  updateMacro: (id: string, patch: Partial<Macro>) => void;
+  duplicateMacro: (id: string) => void;
+  addStep: (macroId: string, step: MacroStep) => void;
+  updateStep: (macroId: string, index: number, step: MacroStep) => void;
+  removeStep: (macroId: string, index: number) => void;
+  moveStep: (macroId: string, index: number, direction: -1 | 1) => void;
 }
 
 function StepEditor({
@@ -122,35 +132,29 @@ function StepEditor({
   }
 }
 
-export function TabMacros({ info, disabled, onLog }: TabMacrosProps) {
-  const {
-    macros,
-    addMacro,
-    removeMacro,
-    updateMacro,
-    duplicateMacro,
-    addStep,
-    updateStep,
-    removeStep,
-    moveStep,
-  } = useMacros();
-
+export function TabMacros({
+  info,
+  disabled,
+  hotkeysEnabled,
+  onHotkeysEnabledChange,
+  onLog,
+  macros,
+  addMacro,
+  removeMacro,
+  updateMacro,
+  duplicateMacro,
+  addStep,
+  updateStep,
+  removeStep,
+  moveStep,
+}: TabMacrosProps) {
   const [selectedId, setSelectedId] = useState<string | null>(() => macros[0]?.id ?? null);
-  const [hotkeysEnabled, setHotkeysEnabled] = useState(true);
   const [runningMacro, setRunningMacro] = useState(false);
 
   const selected =
     macros.find((m) => m.id === selectedId) ?? macros[0] ?? null;
 
   const log = useCallback((line: string) => onLog(line), [onLog]);
-
-  useMacroHotkeys({
-    macros,
-    enabled: hotkeysEnabled,
-    readyForMouse: info?.ready_for_mouse ?? false,
-    onTrigger: (name) => log(`⌨ Macro "${name}" (atajo)\n`),
-    onError: (msg) => log(`⚠ ${msg}\n`),
-  });
 
   const capturePosition = useCallback(async () => {
     if (!selected) return;
@@ -209,15 +213,15 @@ export function TabMacros({ info, disabled, onLog }: TabMacrosProps) {
         <div>
           <h2 className="font-semibold">Atajos globales</h2>
           <p className="mt-1 text-sm text-gray-400">
-            Funcionan aunque la ventana no tenga el foco. Ejemplos: <code className="text-accent">F9</code>,{" "}
-            <code className="text-accent">Ctrl+Shift+M</code>
+            Funcionan aunque la ventana no tenga el foco. El campo de atajo escucha teclas en vivo (pausa
+            el registro global mientras capturas).
           </p>
         </div>
         <label className="flex cursor-pointer items-center gap-2 text-sm">
           <input
             type="checkbox"
             checked={hotkeysEnabled}
-            onChange={(e) => setHotkeysEnabled(e.target.checked)}
+            onChange={(e) => onHotkeysEnabledChange(e.target.checked)}
           />
           Escuchar atajos
         </label>
@@ -270,15 +274,15 @@ export function TabMacros({ info, disabled, onLog }: TabMacrosProps) {
                     onChange={(e) => updateMacro(selected.id, { name: e.target.value })}
                   />
                 </label>
-                <label className="flex min-w-[160px] flex-col gap-1 text-sm">
-                  <span className="text-gray-400">Atajo (opcional)</span>
-                  <input
-                    className="input font-mono"
-                    placeholder="F9"
+                <div className="min-w-[200px] flex-1">
+                  <HotkeyInput
+                    key={selected.id}
+                    id={`macro-hotkey-${selected.id}`}
+                    label="Atajo (opcional)"
                     value={selected.hotkey}
-                    onChange={(e) => updateMacro(selected.id, { hotkey: e.target.value })}
+                    onChange={(hotkey) => updateMacro(selected.id, { hotkey })}
                   />
-                </label>
+                </div>
               </div>
               <label className="flex items-center gap-2 text-sm">
                 <input
