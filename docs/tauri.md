@@ -34,8 +34,8 @@ La rama `tauri` no expone botones con `-c` (color del píxel). Solo coordenadas 
 ## Desarrollo
 
 ```bash
-npm install
-npm run tauri dev
+pnpm install
+pnpm tauri dev
 ```
 
 Volver al [índice](overview.md).

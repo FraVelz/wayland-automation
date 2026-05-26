@@ -16,7 +16,7 @@ Ver [BRANCHES.md](BRANCHES.md).
 ## Requisitos (rama tauri)
 
 - Todo lo de `pyside`: Sway, `scripts/setup.sh`, grupo `input`
-- [Node.js](https://nodejs.org/) 20+
+- [Node.js](https://nodejs.org/) 20+ y [pnpm](https://pnpm.io/) (`corepack enable`)
 - [Rust](https://www.rust-lang.org/tools/install) (para compilar Tauri)
 
 ## Instalación del sistema
@@ -31,14 +31,14 @@ Cierra sesión si te añadieron al grupo `input`.
 ## Desarrollo (interfaz Tauri)
 
 ```bash
-npm install
-npm run tauri dev
+pnpm install
+pnpm tauri dev
 ```
 
 Compilar release:
 
 ```bash
-npm run tauri build
+pnpm tauri build
 ```
 
 ## Diferencias respecto a PySide
@@ -50,9 +50,9 @@ npm run tauri build
 ## Calidad de código
 
 ```bash
-npm run lint       # ESLint + TypeScript
-npm run lint:md    # markdownlint
-npm run format     # Prettier
+pnpm lint       # ESLint + TypeScript
+pnpm lint:md    # markdownlint
+pnpm format     # Prettier
 ```
 
 ## Documentación técnica
