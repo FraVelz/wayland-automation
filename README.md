@@ -63,6 +63,7 @@ pnpm format     # Prettier
 
 | Qué ves | Qué hacer |
 |---------|-----------|
+| `ERR_PNPM_IGNORED_BUILDS` (esbuild) | En `pnpm-workspace.yaml` debe estar `esbuild: true`; luego `pnpm install` |
 | `cargo not found` | Instala Rust: `rustup default stable` |
 | `ydotoold no está activo` | `./scripts/ydotoold.sh start` |
 | El ratón no se mueve | Cierra sesión tras `./scripts/setup.sh` |
