@@ -4,6 +4,7 @@ import { LogPanel } from "./components/LogPanel";
 import { TabCursor } from "./components/TabCursor";
 import { TabDaemon } from "./components/TabDaemon";
 import { TabMouse } from "./components/TabMouse";
+import { TabMacros } from "./components/TabMacros";
 import { TabSystem } from "./components/TabSystem";
 import { useDaemonStatus } from "./hooks/useDaemonStatus";
 import { useScriptRunner } from "./hooks/useScriptRunner";
@@ -12,6 +13,7 @@ import type { TabId } from "./lib/types";
 const TABS: Array<{ id: TabId; label: string }> = [
   { id: "cursor", label: "Cursor" },
   { id: "mouse", label: "Ratón" },
+  { id: "macros", label: "Macros" },
   { id: "daemon", label: "Daemon" },
   { id: "system", label: "Sistema" },
 ];
@@ -74,6 +76,13 @@ export default function App() {
 
       <main className="min-h-0 flex-1 overflow-y-auto">
         {tab === "cursor" && <TabCursor />}
+        {tab === "macros" && (
+          <TabMacros
+            info={info}
+            disabled={running}
+            onLog={append}
+          />
+        )}
         {tab === "mouse" && (
           <TabMouse
             info={info}

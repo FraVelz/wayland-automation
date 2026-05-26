@@ -8,25 +8,36 @@ export function useScriptRunner(onLine: (line: string) => void) {
   onLineRef.current = onLine;
 
   useEffect(() => {
+    let cancelled = false;
     const unsubs: Array<() => void> = [];
+
     void (async () => {
-      unsubs.push(
-        await onScriptOutput((line) => {
-          onLineRef.current(line);
-        }),
-      );
-      unsubs.push(
-        await onScriptFinished(({ code, status }) => {
-          onLineRef.current(`■ Finalizado (${status})\n\n`);
-          setRunning(false);
-          setLongRunning(false);
-          if (code !== 0) {
-            onLineRef.current(`⚠ Código de salida: ${code}\n`);
-          }
-        }),
-      );
+      const unsubOutput = await onScriptOutput((line) => {
+        onLineRef.current(line);
+      });
+      if (cancelled) {
+        unsubOutput();
+        return;
+      }
+      unsubs.push(unsubOutput);
+
+      const unsubFinished = await onScriptFinished(({ code, status }) => {
+        onLineRef.current(`■ Finalizado (${status})\n\n`);
+        setRunning(false);
+        setLongRunning(false);
+        if (code !== 0) {
+          onLineRef.current(`⚠ Código de salida: ${code}\n`);
+        }
+      });
+      if (cancelled) {
+        unsubFinished();
+        return;
+      }
+      unsubs.push(unsubFinished);
     })();
+
     return () => {
+      cancelled = true;
       unsubs.forEach((u) => u());
     };
   }, []);

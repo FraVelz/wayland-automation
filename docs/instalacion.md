@@ -6,7 +6,7 @@ Desde la raíz del repositorio:
 
 ```bash
 chmod +x scripts/*.sh
-./scripts/setup.sh
+./scripts/setup.sh   # no uses sudo ./scripts/setup.sh
 ```
 
 El script:

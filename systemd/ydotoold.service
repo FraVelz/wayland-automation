@@ -5,7 +5,7 @@ After=graphical-session.target
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/ydotoold
+ExecStart=/usr/bin/sg input -c "/usr/bin/ydotoold -p /tmp/.ydotool_socket"
 Restart=on-failure
 RestartSec=2
 Environment=YDOTOOL_SOCKET=/tmp/.ydotool_socket

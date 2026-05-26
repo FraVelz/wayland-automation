@@ -58,23 +58,37 @@ cmd_start() {
     fi
 
     if [[ -f "${INSTALLED_UNIT}" ]]; then
+        systemctl --user reset-failed "${SERVICE_NAME}" 2>/dev/null || true
         systemctl --user start "${SERVICE_NAME}"
-        sleep 0.3
+        sleep 0.5
         if is_running; then
             echo "ydotoold iniciado vía systemd --user"
             return 0
         fi
+        echo "systemd --user no pudo iniciar ydotoold." >&2
+        journalctl --user -u "${SERVICE_NAME}" -n 3 --no-pager 2>/dev/null | sed 's/^/    /' >&2 || true
     fi
 
     echo "Iniciando ydotoold en segundo plano..."
-    nohup ydotoold >/dev/null 2>&1 &
-    sleep 0.3
+    nohup ydotoold -p "${YDOTOOL_SOCKET}" >/dev/null 2>&1 &
+    sleep 0.5
 
     if is_running; then
         echo "ydotoold iniciado (PID aprox: $(daemon_pid))"
     else
         echo "Error: no se pudo iniciar ydotoold." >&2
-        echo "¿Estás en el grupo 'input'? Ejecuta ./scripts/setup.sh y cierra sesión." >&2
+        if ! groups | grep -qw input; then
+            echo "No estás en el grupo 'input'. Ejecuta ./scripts/setup.sh y cierra sesión." >&2
+        elif [[ ! -r /dev/uinput || ! -w /dev/uinput ]]; then
+            echo "Sin acceso a /dev/uinput (el grupo input no basta por sí solo)." >&2
+            echo "Ejecuta ./scripts/setup.sh (sudo) o, manualmente:" >&2
+            echo "  sudo modprobe uinput" >&2
+            echo "  sudo udevadm trigger -c add -s misc -n uinput" >&2
+            echo "Si acabas de unirte al grupo input, cierra sesión y vuelve a entrar." >&2
+        else
+            echo "Reinstala la unidad systemd: ./scripts/ydotoold.sh install" >&2
+            echo "Revisa logs: ./scripts/ydotoold.sh logs" >&2
+        fi
         exit 1
     fi
 }
