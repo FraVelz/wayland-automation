@@ -1,74 +1,70 @@
 # Automatización Wayland (Sway)
 
-Herramientas para ver la posición del cursor, leer el color del píxel bajo el ratón y moverlo en **Arch Linux** con **Sway**.
+Herramientas para ver la posición del cursor, mover el ratón y gestionar `ydotoold` en **Arch Linux** con **Sway**.
 
-Incluye una **aplicación gráfica** y scripts que puedes usar desde la terminal.
+Esta rama (`tauri`) usa **Tauri 2 + React + TypeScript + Tailwind CSS**. La versión PySide6 está en la rama [`pyside`](https://github.com/FraVelz/wayland-automation/tree/pyside).
 
-## ¿Qué necesitas?
+## Ramas
 
-- Arch Linux con **Sway** (sesión Wayland)
-- Permisos de `sudo` solo la primera vez, para instalar
+| Rama | Interfaz |
+|------|----------|
+| `pyside` | PySide6 (por defecto) |
+| `tauri` | Tauri + React |
 
-## Empezar en 2 pasos
+Ver [BRANCHES.md](BRANCHES.md).
+
+## Requisitos (rama tauri)
+
+- Todo lo de `pyside`: Sway, `scripts/setup.sh`, grupo `input`
+- [Node.js](https://nodejs.org/) 20+
+- [Rust](https://www.rust-lang.org/tools/install) (para compilar Tauri)
+
+## Instalación del sistema
 
 ```bash
 chmod +x scripts/*.sh
 ./scripts/setup.sh
 ```
 
-Si el instalador te añade al grupo `input`, **cierra sesión y vuelve a entrar** antes de seguir.
+Cierra sesión si te añadieron al grupo `input`.
 
-Abre la aplicación:
-
-```bash
-./scripts/activar-entorno.sh
-```
-
-## La aplicación gráfica
-
-Al ejecutar `./scripts/activar-entorno.sh` se abre una ventana con cuatro pestañas:
-
-| Pestaña | Para qué sirve |
-|---------|----------------|
-| **Cursor** | Ver coordenadas del ratón y el color del píxel |
-| **Ratón** | Mover el cursor (relativo o a una posición) |
-| **Daemon** | Estado en vivo, iniciar/detener/reiniciar, autostart, logs y diagnóstico |
-| **Sistema** | Comprobar que todo está bien instalado |
-
-Abajo verás un panel con la salida de los comandos y un indicador que muestra si el daemon está activo.
-
-> Si mueves el ratón desde la app o los scripts, el daemon (`ydotoold`) debe estar en marcha. En la pestaña **Daemon** puedes iniciarlo con un clic.
-
-## Uso desde terminal (opcional)
-
-Si prefieres no usar la interfaz gráfica:
+## Desarrollo (interfaz Tauri)
 
 ```bash
-./scripts/cursor.sh              # posición del cursor
-./scripts/mover_raton.sh         # mueve el ratón (requiere daemon activo)
-./scripts/ydotoold.sh start      # inicia el daemon
-./scripts/ydotoold.sh status     # comprueba si está activo
+npm install
+npm run tauri dev
 ```
+
+Compilar release:
+
+```bash
+npm run tauri build
+```
+
+## Diferencias respecto a PySide
+
+- Misma lógica detrás: los scripts en `scripts/` no cambian.
+- La pestaña **Cursor** solo muestra **coordenadas** (sin color del píxel / `-c`).
+- No se incluye configuración del editor Cursor (carpeta `.cursor/` ignorada en git).
+
+## Calidad de código
+
+```bash
+npm run lint       # ESLint + TypeScript
+npm run lint:md    # markdownlint
+npm run format     # Prettier
+```
+
+## Documentación técnica
+
+[docs/overview.md](docs/overview.md) · [docs/tauri.md](docs/tauri.md)
 
 ## Problemas frecuentes
 
 | Qué ves | Qué hacer |
 |---------|-----------|
-| Error de PySide6 | Ejecuta `./scripts/activar-entorno.sh` de nuevo |
-| La ventana no abre | Ábrela desde una terminal dentro de Sway (por ejemplo foot) |
-| `ydotoold no está activo` | Pestaña **Daemon** → Iniciar, o `./scripts/ydotoold.sh start` |
-| El ratón no se mueve | `./scripts/ydotoold.sh status` y, si hace falta, cierra sesión tras `./scripts/setup.sh` |
-| `wl-find-cursor no encontrado` | Vuelve a ejecutar `./scripts/setup.sh` |
+| `cargo not found` | Instala Rust: `rustup default stable` |
+| `ydotoold no está activo` | `./scripts/ydotoold.sh start` |
+| El ratón no se mueve | Cierra sesión tras `./scripts/setup.sh` |
 
-Más casos y detalles: [docs/solucion-problemas.md](docs/solucion-problemas.md).
-
-## Documentación técnica
-
-Arquitectura del proyecto, scripts, permisos e instalación detallada:
-
-**[docs/overview.md](docs/overview.md)**
-
-## Enlaces útiles
-
-- [ydotool](https://github.com/ReimuNotMoe/ydotool)
-- [wl-find-cursor](https://github.com/cjacker/wl-find-cursor)
+Más: [docs/solucion-problemas.md](docs/solucion-problemas.md).

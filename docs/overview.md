@@ -8,7 +8,8 @@
 |-----------|-------------|
 | [estructura.md](estructura.md) | Árbol del proyecto y qué hace cada archivo |
 | [arquitectura.md](arquitectura.md) | Cómo se relacionan la GUI, los scripts y las herramientas Wayland |
-| [aplicacion.md](aplicacion.md) | Código Python: entrada, servicios e interfaz PySide6 |
+| [aplicacion.md](aplicacion.md) | Código Python: entrada, servicios e interfaz PySide6 (rama `pyside`) |
+| [tauri.md](tauri.md) | Rama `tauri`: Tauri, React, TypeScript y Tailwind |
 | [scripts.md](scripts.md) | Scripts shell: cursor, ratón y daemon |
 | [daemon.md](daemon.md) | `ydotoold`, permisos, systemd y diagnóstico |
 | [instalacion.md](instalacion.md) | `scripts/setup.sh`, paquetes Arch y configuración del sistema |
