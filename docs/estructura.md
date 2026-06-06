@@ -1,84 +1,40 @@
 # Estructura del proyecto
 
-El repositorio tiene **dos ramas** con distinto frontend; el backend shell es común.
-
-## Compartido (ambas ramas)
+Rama **`script`**: automatización Wayland solo con scripts shell.
 
 ```text
 wayland-automation/
 ├── README.md
-├── BRANCHES.md
+├── LICENSE
 ├── docs/
 ├── scripts/
-│   ├── setup.sh              # Instalación sistema + PySide en env/
-│   ├── setup-tauri-deps.sh     # WebKit GTK para compilar Tauri (Arch)
-│   ├── activar-entorno.sh      # Solo rama pyside: lanza GUI Python
+│   ├── setup.sh
 │   ├── cursor.sh
 │   ├── mover_raton.sh
+│   ├── ejecutar_macro.sh
+│   ├── grabar_posiciones.sh      # registrar teclas + coordenadas
+│   ├── atalhos_numeros.sh        # atajos 0-9
 │   ├── ydotoold.sh
-│   └── lib/common.sh
-├── bin/wl-find-cursor
+│   ├── lib/
+│   │   ├── common.sh
+│   │   ├── input_common.py
+│   │   ├── grabar_posiciones.py
+│   │   └── atalhos_numeros.py
+│   └── config/
+│       └── atalhos.json.example
+├── bin/wl-find-cursor            # compilado por setup.sh
 ├── systemd/ydotoold.service
-├── package.json              # pnpm: lint MD; en tauri también frontend
-├── pnpm-lock.yaml
-├── pnpm-workspace.yaml       # allowBuilds (pnpm 11)
 └── .gitignore
 ```
 
-## Rama `pyside`
+## Carpetas ignoradas / generadas
 
-```text
-├── main.py
-├── requirements.txt          # PySide6
-├── app/
-│   ├── config.py
-│   ├── services/             # commands, runner, daemon_info
-│   └── ui/                   # main_window, theme, widgets, daemon_panel
-└── env/                      # venv Python (generado, no en git)
-```
-
-| Entrada | Uso |
-|---------|-----|
-| `scripts/setup.sh` | Una vez: paquetes, permisos, wl-find-cursor, PySide en `env/` |
-| `scripts/activar-entorno.sh` | Abrir la GUI |
-| `main.py` | Entrada directa con venv activo |
-
-## Rama `tauri`
-
-```text
-├── index.html
-├── vite.config.ts
-├── tsconfig*.json
-├── eslint.config.js
-├── react-doctor.config.json
-├── tailwind.config.js
-├── src/                      # React
-│   ├── App.tsx
-│   ├── components/
-│   ├── hooks/
-│   └── lib/
-├── src-tauri/                # Rust + Tauri
-│   ├── src/lib.rs            # run_script, get_daemon_info
-│   ├── tauri.conf.json
-│   └── Cargo.toml
-├── dist/                     # build frontend (generado)
-└── node_modules/
-```
-
-| Entrada | Uso |
-|---------|-----|
-| `pnpm install` | Dependencias Node |
-| `pnpm tauri dev` | App de escritorio en desarrollo |
-| `pnpm tauri build` | Ejecutable release |
-| `scripts/setup-tauri-deps.sh` | Librerías GTK/WebKit (sudo) |
-
-## Carpetas ignoradas
-
-| Carpeta | Qué es |
-|---------|--------|
+| Carpeta / archivo | Qué es |
+|-------------------|--------|
 | `.build/` | Clon temporal para compilar wl-find-cursor |
-| `env/` | Entorno virtual Python (`pyside`) |
-| `src-tauri/target/` | Artefactos Rust (`tauri`) |
-| `node_modules/`, `dist/` | Frontend (`tauri`) |
+| `bin/wl-find-cursor` | Binario local (no en git) |
+| `scripts/config/atalhos.json` | Config local de atajos |
+| `scripts/config/macro_generado.json` | Macro grabada con F9 |
+| `scripts/config/grabacion.log` | Log de grabación |
 
 Volver al [índice](overview.md).

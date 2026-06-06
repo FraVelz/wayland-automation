@@ -1,24 +1,21 @@
-# Wayland Automation (Sway)
+# Wayland Automation — Scripts (Sway)
 
-Automatización en **Arch Linux + Sway**: posición del cursor, movimiento del ratón y gestión de `ydotoold`.
+Automatización en **Arch Linux + Sway** solo con scripts shell: posición del cursor, movimiento del ratón, atajos numéricos y gestión de `ydotoold`.
 
-## ¿Qué incluye?
-
-- **Scripts shell** en `scripts/` (núcleo del proyecto)
-- **GUI de escritorio** con Tauri 2 + React + TypeScript + Tailwind (`src/`, `src-tauri/`)
+> Esta es la rama **`script`**: terminal únicamente, sin GUI (Tauri/React está en **`main`**).
 
 ## Requisitos
 
 - Arch Linux con sesión **Sway** (Wayland)
 - `sudo` solo la primera vez (`./scripts/setup.sh`)
-- Grupo **`input`** y `ydotoold` activo para **mover** el ratón
-- Node 20+, **pnpm**, **Rust**, `webkit2gtk-4.1` (para compilar la GUI)
+- Grupo **`input`** y `ydotoold` activo para mover el ratón y escuchar teclas
 
 ## Empezar
 
 ```bash
 git clone https://github.com/FraVelz/wayland-automation.git
 cd wayland-automation
+git checkout script
 chmod +x scripts/*.sh
 ./scripts/setup.sh   # no uses sudo en el script completo; pedirá sudo internamente
 ```
@@ -31,31 +28,22 @@ Comprobar el daemon:
 ./scripts/ydotoold.sh status
 ```
 
-## Interfaz gráfica (Tauri)
+## Scripts
+
+| Script | Función |
+|--------|---------|
+| `cursor.sh` | Coordenadas del cursor (y color con `-c`) |
+| `mover_raton.sh` | Mueve el ratón (requiere ydotoold) |
+| `ejecutar_macro.sh` | Ejecuta una macro desde JSON |
+| `grabar_posiciones.sh` | Registra teclas/clics y coordenadas (para armar macros) |
+| `atalhos_numeros.sh` | Al pulsar 0–9 ejecuta comando/macro |
+| `ydotoold.sh` | Gestión del daemon |
 
 ```bash
-corepack enable
-pnpm install                    # obligatorio: instala vite y el resto
-./scripts/setup-tauri-deps.sh   # WebKit GTK (sudo, obligatorio una vez)
-./scripts/check-tauri-deps.sh   # verificar antes de compilar
-source ~/.cargo/env             # si usas rustup
-pnpm tauri dev                  # ventana de escritorio
-```
-
-Compilar ejecutable:
-
-```bash
-pnpm tauri build
-# → src-tauri/target/release/ (y bundle/ si aplica)
-```
-
-## Scripts desde terminal (sin GUI)
-
-```bash
-./scripts/cursor.sh              # coordenadas del cursor
-./scripts/mover_raton.sh         # mueve el ratón (requiere ydotoold)
-./scripts/ydotoold.sh start      # inicia el daemon
-./scripts/ydotoold.sh check      # diagnóstico
+./scripts/cursor.sh -w                    # coordenadas en tiempo real
+./scripts/grabar_posiciones.sh          # descubrir coordenadas
+cp scripts/config/atalhos.json.example scripts/config/atalhos.json
+./scripts/atalhos_numeros.sh            # atajos numéricos
 ```
 
 ## Documentación
@@ -66,17 +54,6 @@ pnpm tauri build
 | Instalación    | [docs/instalacion.md](docs/instalacion.md)               |
 | Scripts shell  | [docs/scripts.md](docs/scripts.md)                       |
 | Problemas      | [docs/solucion-problemas.md](docs/solucion-problemas.md) |
-
-## Calidad de código
-
-```bash
-pnpm lint
-pnpm react:doctor
-pnpm lint:md
-pnpm format
-```
-
-Ver [docs/calidad.md](docs/calidad.md).
 
 ## Autor y licencia
 

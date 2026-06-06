@@ -55,7 +55,7 @@ if [[ "${EUID}" -ne 0 ]]; then
     echo
 fi
 
-PACKAGES=(ydotool grim slurp imagemagick wayland-protocols git base-devel)
+PACKAGES=(ydotool grim slurp imagemagick wayland-protocols git base-devel python-evdev)
 echo "==> Instalando paquetes: ${PACKAGES[*]}"
 run_sudo pacman -S --needed --noconfirm "${PACKAGES[@]}"
 
@@ -130,7 +130,9 @@ else
     echo "  1. Verifica permisos:    ./scripts/ydotoold.sh check"
 fi
 echo "  2. Verifica el daemon:  ./scripts/ydotoold.sh status"
-echo "  3. GUI Tauri:          pnpm install && ./scripts/setup-tauri-deps.sh"
-echo "                        source ~/.cargo/env && pnpm tauri dev"
+echo "  3. Coordenadas:        ./scripts/cursor.sh -w"
+echo "  4. Atajos numéricos:   ./scripts/grabar_posiciones.sh"
+echo "                        cp scripts/config/atalhos.json.example scripts/config/atalhos.json"
+echo "                        ./scripts/atalhos_numeros.sh"
 echo
 echo "Documentación: README.md"

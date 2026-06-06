@@ -1,0 +1,44 @@
+---
+description: Convenciones para scripts shell y Python en scripts/
+globs: scripts/**
+alwaysApply: false
+---
+
+# Scripts shell y Python
+
+## Bash (`scripts/*.sh`)
+
+- Cabecera: `#!/usr/bin/env bash`, `set -euo pipefail`.
+- Cargar siempre `scripts/lib/common.sh` con ruta relativa al script.
+- Funciones compartidas en `common.sh`; no duplicar `require_wayland`, `get_cursor_pos`, etc.
+- Mensajes de error a **stderr**; `usage()` con heredoc; salida limpia a stdout cuando aplique.
+- Permisos: `chmod +x` en scripts nuevos; mencionar en docs si añades dependencia de pacman.
+
+## Python (`scripts/lib/*.py`)
+
+- Python 3 estándar + `evdev`; invocado desde wrapper `.sh` que exporta `PYTHONPATH=scripts/lib`.
+- Pasar `WL_FIND_CURSOR` desde el wrapper bash para coordenadas.
+- **No** usar `grab()` en dispositivos evdev (el usuario debe seguir usando el teclado/ratón).
+- Deduplicar eventos si hay varios teclados (~40 ms).
+- Formato de pasos de macro (compatible con `ejecutar_macro.sh`):
+
+```json
+{"type": "delay", "ms": 200}
+{"type": "move_absolute", "x": 500, "y": 300}
+{"type": "click", "button": "left"}
+```
+
+## Nuevos scripts
+
+1. Wrapper `.sh` + lógica Python solo si hace falta evdev/JSON complejo.
+2. Entrada en `docs/scripts.md` y tabla del `README.md` si es comando de usuario.
+3. Ejemplo de config en `scripts/config/*.example` si usa JSON local.
+
+## Comprobar manualmente
+
+```bash
+./scripts/ydotoold.sh status
+./scripts/cursor.sh
+python3 -m py_compile scripts/lib/*.py
+bash -n scripts/mi_script.sh
+```

@@ -11,9 +11,7 @@ chmod +x scripts/*.sh
 
 | Script | Función |
 |--------|---------|
-| `setup.sh` | Paquetes Arch, grupo `input`, compila `wl-find-cursor`, venv + PySide6, systemd user |
-| `setup-tauri-deps.sh` | `webkit2gtk-4.1`, `gtk3`, etc. (compilar Tauri) |
-| `activar-entorno.sh` | **Solo `pyside`**: crea `env/` y ejecuta `main.py` |
+| `setup.sh` | Paquetes Arch, grupo `input`, compila `wl-find-cursor`, systemd user |
 
 ## Daemon (`ydotoold.sh`)
 
@@ -48,8 +46,6 @@ Con color del píxel (`-c`, usa `grim` + ImageMagick):
 ./scripts/cursor.sh --json -c
 ```
 
-La GUI de la rama **tauri** no expone `-c`; la de **pyside** sí.
-
 ## Mover ratón (`mover_raton.sh`)
 
 Requiere `ydotoold` activo.
@@ -59,6 +55,49 @@ Requiere `ydotoold` activo.
 ./scripts/mover_raton.sh --dx 0 --dy -50
 ./scripts/mover_raton.sh --x 500 --y 300
 ./scripts/mover_raton.sh --delay 0
+```
+
+## Macro desde JSON (`ejecutar_macro.sh`)
+
+```bash
+./scripts/ejecutar_macro.sh --file scripts/config/macro_generado.json
+```
+
+## Grabar coordenadas (`grabar_posiciones.sh`)
+
+Registra teclas y clics con la posición del cursor. Sirve para descubrir coordenadas y armar macros.
+
+```bash
+./scripts/grabar_posiciones.sh
+```
+
+- Cada tecla/clic → log con `x=` e `y=`
+- **0–9** → imprime fragmento JSON para `atalhos.json`
+- **F6** mover, **F7** clic, **F8** delay, **F9** guardar macro, **F10** vaciar
+
+Salida: `scripts/config/grabacion.log` y `scripts/config/macro_generado.json`.
+
+## Atajos numéricos (`atalhos_numeros.sh`)
+
+Al pulsar **0–9** ejecuta comando shell y/o secuencia de ratón.
+
+```bash
+cp scripts/config/atalhos.json.example scripts/config/atalhos.json
+# edita coordenadas
+./scripts/atalhos_numeros.sh
+```
+
+Formato en `atalhos.json`:
+
+```json
+"1": {
+  "label": "Mi atajo",
+  "command": "notify-send hola",
+  "steps": [
+    {"type": "move_absolute", "x": 500, "y": 300},
+    {"type": "click", "button": "left"}
+  ]
+}
 ```
 
 Volver al [índice](overview.md).

@@ -1,6 +1,0 @@
-.cursor/
-node_modules/
-env/
-.build/
-src-tauri/target/
-dist/

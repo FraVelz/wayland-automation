@@ -1,5 +1,4 @@
 # Python
-env/
 __pycache__/
 *.py[cod]
 *.egg-info/
@@ -9,18 +8,8 @@ __pycache__/
 # Build / datos locales
 .build/
 bin/wl-find-cursor
-
-# Node / Tauri
-node_modules/
-package-lock.json
-npm-shrinkwrap.json
-dist/
-*.tsbuildinfo
-src-tauri/target/
-src-tauri/gen/
-
-# IDE (no incluir configuración de Cursor)
-.cursor/
+scripts/config/atalhos.json
+scripts/config/macro_generado.json
 
 # Sistema
 .DS_Store
