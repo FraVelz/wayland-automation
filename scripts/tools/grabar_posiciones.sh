@@ -4,9 +4,9 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
-# shellcheck source=lib/common.sh
-source "${SCRIPT_DIR}/lib/common.sh"
+PROJECT_DIR="$(cd "${SCRIPT_DIR}/../.." && pwd)"
+# shellcheck source=../../core/lib/common.sh
+source "${PROJECT_DIR}/core/lib/common.sh"
 
 usage() {
     cat <<EOF
@@ -16,8 +16,8 @@ Registra cada tecla y clic del ratón junto con las coordenadas del cursor.
 Útil para armar macros move → click → move → click en atalhos.json.
 
 Opciones:
-  --log PATH        Log de eventos (default: scripts/config/grabacion.log)
-  --macro-out PATH  JSON de macro con F9 (default: scripts/config/macro_generado.json)
+  --log PATH        Log de eventos (default: scripts/tools/config/grabacion.log)
+  --macro-out PATH  JSON de macro con F9 (default: scripts/tools/config/macro_generado.json)
   -h, --help        Muestra esta ayuda
 
 Controles mientras corre:
@@ -37,8 +37,8 @@ Ejemplos:
 EOF
 }
 
-LOG="scripts/config/grabacion.log"
-MACRO_OUT="scripts/config/macro_generado.json"
+LOG="scripts/tools/config/grabacion.log"
+MACRO_OUT="scripts/tools/config/macro_generado.json"
 
 main() {
     while [[ $# -gt 0 ]]; do
@@ -55,7 +55,7 @@ main() {
     if ! python3 -c "import evdev" 2>/dev/null; then
         echo "Error: falta python-evdev." >&2
         echo "Instala: sudo pacman -S python-evdev" >&2
-        echo "O ejecuta ./scripts/setup.sh" >&2
+        echo "O ejecuta ./core/setup.sh" >&2
         exit 1
     fi
 
@@ -65,7 +65,7 @@ main() {
         echo "Advertencia: wl-find-cursor no disponible; coordenadas vacías." >&2
     fi
 
-    export PYTHONPATH="${SCRIPT_DIR}/lib:${PYTHONPATH:-}"
+    export PYTHONPATH="${PROJECT_DIR}/scripts/lib:${SCRIPT_DIR}/lib:${PYTHONPATH:-}"
     exec python3 "${SCRIPT_DIR}/lib/grabar_posiciones.py" \
         --project-dir "${PROJECT_DIR}" \
         --log "${LOG}" \

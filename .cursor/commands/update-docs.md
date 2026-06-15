@@ -19,9 +19,9 @@ Usar cuando el usuario invoque **`/update-docs`**, adjunte este archivo o pida a
 
 | Tema | Contrastar con |
 |------|----------------|
-| Scripts y flags | `scripts/*.sh`, `scripts/lib/` |
-| Instalación / paquetes | `scripts/setup.sh` |
-| Daemon | `scripts/ydotoold.sh`, `systemd/`, `docs/daemon.md` |
+| Scripts y flags | `core/*.sh`, `scripts/*.sh`, `scripts/tools/*.sh`, `scripts/lib/` |
+| Instalación / paquetes | `core/setup.sh` |
+| Daemon | `core/ydotoold.sh`, `core/prender.sh`, `systemd/`, `docs/daemon.md` |
 | Atajos y macros | `scripts/config/atalhos.json.example`, `docs/scripts.md` |
 | Estructura | `docs/estructura.md`, árbol real del repo |
 | Problemas frecuentes | `docs/solucion-problemas.md` |

@@ -31,7 +31,7 @@ require_wayland() {
 require_ydotool() {
     if ! command -v ydotool >/dev/null 2>&1; then
         echo "Error: ydotool no está instalado." >&2
-        echo "Ejecuta: ./scripts/setup.sh" >&2
+        echo "Ejecuta: ./core/setup.sh" >&2
         exit 1
     fi
 }
@@ -40,7 +40,7 @@ require_ydotoold() {
     require_ydotool
     if [[ ! -S "${YDOTOOL_SOCKET}" ]]; then
         echo "Error: ydotoold no está activo (socket ${YDOTOOL_SOCKET} no existe)." >&2
-        echo "Inicia el daemon: ./scripts/ydotoold.sh start" >&2
+        echo "Inicia el daemon: ./core/prender.sh" >&2
         exit 1
     fi
 }
@@ -66,7 +66,7 @@ get_cursor_pos() {
     local wl_find_cursor
     wl_find_cursor="$(find_wl_find_cursor)" || {
         echo "Error: wl-find-cursor no encontrado." >&2
-        echo "Ejecuta ./scripts/setup.sh para compilarlo o instálalo en PATH." >&2
+        echo "Ejecuta ./core/setup.sh para compilarlo o instálalo en PATH." >&2
         return 1
     }
     require_wayland

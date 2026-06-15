@@ -7,13 +7,13 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
 BUILD_DIR="${PROJECT_DIR}/.build/wl-find-cursor"
 
-# Usuario real del setup (no root cuando se invoca con sudo ./scripts/setup.sh)
+# Usuario real del setup (no root cuando se invoca con sudo ./core/setup.sh)
 if [[ "${EUID}" -eq 0 ]]; then
     if [[ -n "${SUDO_USER:-}" ]]; then
         SETUP_USER="${SUDO_USER}"
     else
-        echo "Error: no ejecutes 'sudo ./scripts/setup.sh'." >&2
-        echo "Usa './scripts/setup.sh' desde tu usuario; pedirá sudo solo para pacman/permisos." >&2
+        echo "Error: no ejecutes 'sudo ./core/setup.sh'." >&2
+        echo "Usa './core/setup.sh' desde tu usuario; pedirá sudo solo para pacman/permisos." >&2
         exit 1
     fi
 else
@@ -110,12 +110,14 @@ if run_as_user systemctl --user enable --now ydotoold.service 2>/dev/null; then
     echo "    ydotoold habilitado e iniciado para ${SETUP_USER}."
 else
     echo "    systemd --user no disponible en esta sesión; inicia manualmente:"
-    echo "    ./scripts/ydotoold.sh start"
+    echo "    ./core/prender.sh"
 fi
 
 echo
-echo "==> Permisos de ejecución en scripts"
-chmod +x "${PROJECT_DIR}"/scripts/*.sh
+echo "==> Permisos de ejecución"
+chmod +x "${PROJECT_DIR}"/core/*.sh
+chmod +x "${PROJECT_DIR}"/scripts/*.sh 2>/dev/null || true
+chmod +x "${PROJECT_DIR}"/scripts/tools/*.sh 2>/dev/null || true
 chmod +x "${PROJECT_DIR}/bin/wl-find-cursor" 2>/dev/null || true
 
 echo
@@ -127,11 +129,11 @@ echo "Próximos pasos:"
 if [[ "${NEEDS_RELOGIN}" -eq 1 ]]; then
     echo "  1. Cierra sesión y vuelve a entrar (grupo input recién añadido)"
 else
-    echo "  1. Verifica permisos:    ./scripts/ydotoold.sh check"
+    echo "  1. Verifica permisos:    ./core/ydotoold.sh check"
 fi
-echo "  2. Verifica el daemon:  ./scripts/ydotoold.sh status"
-echo "  3. Coordenadas:        ./scripts/cursor.sh -w"
-echo "  4. Atajos numéricos:   ./scripts/grabar_posiciones.sh"
+echo "  2. Verifica el daemon:  ./core/ydotoold.sh status"
+echo "  3. Coordenadas:        ./scripts/tools/cursor.sh -w"
+echo "  4. Atajos numéricos:   ./scripts/tools/grabar_posiciones.sh"
 echo "                        cp scripts/config/atalhos.json.example scripts/config/atalhos.json"
 echo "                        ./scripts/atalhos_numeros.sh"
 echo

@@ -13,8 +13,8 @@ git checkout script
 Desde la raíz del repositorio:
 
 ```bash
-chmod +x scripts/*.sh
-./scripts/setup.sh   # no uses sudo ./scripts/setup.sh
+chmod +x core/*.sh scripts/*.sh scripts/tools/*.sh
+./core/setup.sh   # no uses sudo ./core/setup.sh
 ```
 
 El script:
@@ -45,7 +45,7 @@ El script:
 | `ydotoold` en marcha | Mover el ratón |
 
 ```bash
-./scripts/ydotoold.sh check
+./core/ydotoold.sh check
 groups | grep input
 ```
 

@@ -16,11 +16,11 @@ Ejecutar cuando sea posible (sin `--no-verify`, sin alterar `git config`):
 
 ```bash
 git branch --show-current
-bash -n scripts/*.sh
-python3 -m py_compile scripts/lib/*.py 2>/dev/null || true
-./scripts/ydotoold.sh check 2>/dev/null || true
-./scripts/cursor.sh --help
-./scripts/grabar_posiciones.sh --help
+bash -n core/*.sh scripts/*.sh scripts/tools/*.sh
+python3 -m py_compile scripts/lib/*.py scripts/tools/lib/*.py 2>/dev/null || true
+./core/ydotoold.sh check 2>/dev/null || true
+./scripts/tools/cursor.sh --help
+./scripts/tools/grabar_posiciones.sh --help
 ./scripts/atalhos_numeros.sh --help
 ```
 
@@ -39,7 +39,7 @@ En rama **`main`** adicionalmente (si existen): `pnpm lint`, `pnpm tauri build` 
 
 ### 1. Scripts y permisos (P0–P1)
 
-- `scripts/setup.sh`, `ydotoold.sh`, `lib/common.sh`
+- `core/setup.sh`, `core/ydotoold.sh`, `core/lib/common.sh`
 - Socket `YDOTOOL_SOCKET`, grupo `input`, `/dev/uinput`
 - Wrappers bash ↔ Python (`PYTHONPATH`, `WL_FIND_CURSOR`)
 

@@ -96,13 +96,13 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Registra teclas/clics y posición del cursor.")
     parser.add_argument(
         "--log",
-        default="scripts/config/grabacion.log",
-        help="Archivo de log (default: scripts/config/grabacion.log)",
+        default="scripts/tools/config/grabacion.log",
+        help="Archivo de log (default: scripts/tools/config/grabacion.log)",
     )
     parser.add_argument(
         "--macro-out",
-        default="scripts/config/macro_generado.json",
-        help="JSON de macro generado con F9 (default: scripts/config/macro_generado.json)",
+        default="scripts/tools/config/macro_generado.json",
+        help="JSON de macro generado con F9 (default: scripts/tools/config/macro_generado.json)",
     )
     parser.add_argument(
         "--project-dir",
@@ -119,7 +119,7 @@ def main() -> int:
     if not devices:
         print(
             "Error: no se pudo abrir dispositivos de entrada.\n"
-            "¿Estás en el grupo input? Cierra sesión tras ./scripts/setup.sh",
+            "¿Estás en el grupo input? Cierra sesión tras ./core/setup.sh",
             file=sys.stderr,
         )
         return 1

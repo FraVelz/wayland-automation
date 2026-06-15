@@ -7,7 +7,7 @@ Automatización en **Arch Linux + Sway** solo con scripts shell: posición del c
 ## Requisitos
 
 - Arch Linux con sesión **Sway** (Wayland)
-- `sudo` solo la primera vez (`./scripts/setup.sh`)
+- `sudo` solo la primera vez (`./core/setup.sh`)
 - Grupo **`input`** y `ydotoold` activo para mover el ratón y escuchar teclas
 
 ## Empezar
@@ -16,8 +16,8 @@ Automatización en **Arch Linux + Sway** solo con scripts shell: posición del c
 git clone https://github.com/FraVelz/wayland-automation.git
 cd wayland-automation
 git checkout script
-chmod +x scripts/*.sh
-./scripts/setup.sh   # no uses sudo en el script completo; pedirá sudo internamente
+chmod +x core/*.sh scripts/*.sh scripts/tools/*.sh
+./core/setup.sh   # no uses sudo en el script completo; pedirá sudo internamente
 ```
 
 Si te añaden al grupo `input`, **cierra sesión y vuelve a entrar**.
@@ -25,25 +25,42 @@ Si te añaden al grupo `input`, **cierra sesión y vuelve a entrar**.
 Comprobar el daemon:
 
 ```bash
-./scripts/ydotoold.sh status
+./core/ydotoold.sh status
+./core/prender.sh
+./core/apagar.sh
 ```
 
-## Scripts
+## Core (infraestructura)
 
 | Script | Función |
 |--------|---------|
-| `cursor.sh` | Coordenadas del cursor (y color con `-c`) |
-| `mover_raton.sh` | Mueve el ratón (requiere ydotoold) |
-| `ejecutar_macro.sh` | Ejecuta una macro desde JSON |
-| `grabar_posiciones.sh` | Registra teclas/clics y coordenadas (para armar macros) |
-| `atalhos_numeros.sh` | Al pulsar 0–9 ejecuta comando/macro |
+| `setup.sh` | Instalación del sistema |
 | `ydotoold.sh` | Gestión del daemon |
+| `prender.sh` / `apagar.sh` | Encender/apagar el daemon en la sesión actual |
+
+## Scripts (uso diario)
+
+| Script | Función |
+|--------|---------|
+| `atalhos_numeros.sh` | Al pulsar 0–9 ejecuta comando/macro |
+| `ejecutar_macro.sh` | Ejecuta una macro desde JSON |
 
 ```bash
-./scripts/cursor.sh -w                    # coordenadas en tiempo real
-./scripts/grabar_posiciones.sh          # descubrir coordenadas
 cp scripts/config/atalhos.json.example scripts/config/atalhos.json
-./scripts/atalhos_numeros.sh            # atajos numéricos
+./scripts/atalhos_numeros.sh
+```
+
+## Tools (herramientas prescindibles)
+
+| Script | Función |
+|--------|---------|
+| `tools/cursor.sh` | Coordenadas del cursor (y color con `-c`) |
+| `tools/grabar_posiciones.sh` | Registra teclas/clics y coordenadas |
+| `tools/mover_raton.sh` | Mueve el ratón (prueba de ydotool) |
+
+```bash
+./scripts/tools/cursor.sh -w
+./scripts/tools/grabar_posiciones.sh
 ```
 
 ## Documentación

@@ -7,21 +7,27 @@ wayland-automation/
 ├── README.md
 ├── LICENSE
 ├── docs/
-├── scripts/
+├── core/                         # infraestructura (setup + daemon)
 │   ├── setup.sh
-│   ├── cursor.sh
-│   ├── mover_raton.sh
-│   ├── ejecutar_macro.sh
-│   ├── grabar_posiciones.sh      # registrar teclas + coordenadas
-│   ├── atalhos_numeros.sh        # atajos 0-9
 │   ├── ydotoold.sh
+│   ├── prender.sh
+│   ├── apagar.sh
+│   └── lib/
+│       └── common.sh
+├── scripts/                      # uso diario (permanente)
+│   ├── atalhos_numeros.sh
+│   ├── ejecutar_macro.sh
 │   ├── lib/
-│   │   ├── common.sh
 │   │   ├── input_common.py
-│   │   ├── grabar_posiciones.py
 │   │   └── atalhos_numeros.py
-│   └── config/
-│       └── atalhos.json.example
+│   ├── config/
+│   │   └── atalhos.json.example
+│   └── tools/                    # prescindibles / experimentales
+│       ├── cursor.sh
+│       ├── grabar_posiciones.sh
+│       ├── mover_raton.sh
+│       └── lib/
+│           └── grabar_posiciones.py
 ├── bin/wl-find-cursor            # compilado por setup.sh
 ├── systemd/ydotoold.service
 └── .gitignore
@@ -34,7 +40,7 @@ wayland-automation/
 | `.build/` | Clon temporal para compilar wl-find-cursor |
 | `bin/wl-find-cursor` | Binario local (no en git) |
 | `scripts/config/atalhos.json` | Config local de atajos |
-| `scripts/config/macro_generado.json` | Macro grabada con F9 |
-| `scripts/config/grabacion.log` | Log de grabación |
+| `scripts/tools/config/macro_generado.json` | Macro grabada con F9 |
+| `scripts/tools/config/grabacion.log` | Log de grabación |
 
 Volver al [índice](overview.md).

@@ -4,8 +4,9 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-# shellcheck source=lib/common.sh
-source "${SCRIPT_DIR}/lib/common.sh"
+PROJECT_DIR="$(cd "${SCRIPT_DIR}/../.." && pwd)"
+# shellcheck source=../../core/lib/common.sh
+source "${PROJECT_DIR}/core/lib/common.sh"
 
 INTERVAL=0.15
 WATCH=false
@@ -101,7 +102,7 @@ main() {
     require_wayland
 
     if ! find_wl_find_cursor >/dev/null; then
-        echo "Error: wl-find-cursor no disponible. Ejecuta ./scripts/setup.sh" >&2
+        echo "Error: wl-find-cursor no disponible. Ejecuta ./core/setup.sh" >&2
         exit 1
     fi
 

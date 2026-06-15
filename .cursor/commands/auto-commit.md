@@ -30,7 +30,7 @@ Cumplir [`.cursor/rules/git-commits.mdc`](../rules/git-commits.mdc).
 
 `scripts`, `cursor`, `daemon`, `macros`, `hotkeys`, `setup`, `systemd`, `docs`, `cursor` (config agente), `deps`.
 
-Rutas: `scripts/`, `scripts/lib/`, `scripts/config/`, `docs/`, `systemd/`, `.cursor/`.
+Rutas: `core/`, `scripts/`, `scripts/tools/`, `docs/`, `systemd/`, `.cursor/`.
 
 ## Ejemplos
 

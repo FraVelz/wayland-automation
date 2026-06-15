@@ -14,7 +14,7 @@ except ImportError:
     print(
         "Error: falta el módulo evdev.\n"
         "Instala: sudo pacman -S python-evdev\n"
-        "O ejecuta ./scripts/setup.sh (incluye python-evdev).",
+        "O ejecuta ./core/setup.sh (incluye python-evdev).",
         file=sys.stderr,
     )
     sys.exit(1)

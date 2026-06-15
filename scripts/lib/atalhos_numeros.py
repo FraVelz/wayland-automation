@@ -122,7 +122,7 @@ def main() -> int:
     if not devices:
         print(
             "Error: no se pudo abrir dispositivos de entrada.\n"
-            "¿Estás en el grupo input? Cierra sesión tras ./scripts/setup.sh",
+            "¿Estás en el grupo input? Cierra sesión tras ./core/setup.sh",
             file=sys.stderr,
         )
         return 1

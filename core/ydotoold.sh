@@ -78,16 +78,16 @@ cmd_start() {
     else
         echo "Error: no se pudo iniciar ydotoold." >&2
         if ! groups | grep -qw input; then
-            echo "No estás en el grupo 'input'. Ejecuta ./scripts/setup.sh y cierra sesión." >&2
+            echo "No estás en el grupo 'input'. Ejecuta ./core/setup.sh y cierra sesión." >&2
         elif [[ ! -r /dev/uinput || ! -w /dev/uinput ]]; then
             echo "Sin acceso a /dev/uinput (el grupo input no basta por sí solo)." >&2
-            echo "Ejecuta ./scripts/setup.sh (sudo) o, manualmente:" >&2
+            echo "Ejecuta ./core/setup.sh (sudo) o, manualmente:" >&2
             echo "  sudo modprobe uinput" >&2
             echo "  sudo udevadm trigger -c add -s misc -n uinput" >&2
             echo "Si acabas de unirte al grupo input, cierra sesión y vuelve a entrar." >&2
         else
-            echo "Reinstala la unidad systemd: ./scripts/ydotoold.sh install" >&2
-            echo "Revisa logs: ./scripts/ydotoold.sh logs" >&2
+            echo "Reinstala la unidad systemd: ./core/ydotoold.sh install" >&2
+            echo "Revisa logs: ./core/ydotoold.sh logs" >&2
         fi
         exit 1
     fi
@@ -124,7 +124,7 @@ cmd_status() {
     if groups | grep -qw input; then
         echo "Grupo input: sí"
     else
-        echo "Grupo input: NO (ejecuta ./scripts/setup.sh y cierra sesión)"
+        echo "Grupo input: NO (ejecuta ./core/setup.sh y cierra sesión)"
     fi
 
     if [[ -f "${INSTALLED_UNIT}" ]]; then
@@ -134,7 +134,7 @@ cmd_status() {
             echo "Autostart:  deshabilitado"
         fi
     else
-        echo "Autostart:  unidad no instalada (./scripts/ydotoold.sh install)"
+        echo "Autostart:  unidad no instalada (./core/ydotoold.sh install)"
     fi
 }
 

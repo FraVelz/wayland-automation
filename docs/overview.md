@@ -9,7 +9,7 @@ El [README](../README.md) es la guía rápida; aquí está el detalle por tema.
 | Documento | Contenido |
 |-----------|-----------|
 | [estructura.md](estructura.md) | Árbol del proyecto |
-| [scripts.md](scripts.md) | Uso de `scripts/*.sh` |
+| [scripts.md](scripts.md) | Uso de `core/`, `scripts/` y `scripts/tools/` |
 | [daemon.md](daemon.md) | `ydotoold`, permisos, systemd |
 | [instalacion.md](instalacion.md) | `setup.sh`, paquetes Arch |
 | [solucion-problemas.md](solucion-problemas.md) | Errores frecuentes |
@@ -18,7 +18,7 @@ El [README](../README.md) es la guía rápida; aquí está el detalle por tema.
 ## Flujo
 
 ```text
-scripts/*.sh  →  wl-find-cursor / ydotool / grim / python-evdev
+core/*.sh  →  scripts/*.sh, scripts/tools/*.sh  →  wl-find-cursor / ydotool / grim / python-evdev
                          ↓
                    ydotoold → /dev/uinput
 ```

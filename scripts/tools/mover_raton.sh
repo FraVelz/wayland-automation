@@ -4,8 +4,9 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-# shellcheck source=lib/common.sh
-source "${SCRIPT_DIR}/lib/common.sh"
+PROJECT_DIR="$(cd "${SCRIPT_DIR}/../.." && pwd)"
+# shellcheck source=../../core/lib/common.sh
+source "${PROJECT_DIR}/core/lib/common.sh"
 
 DX=100
 DY=0

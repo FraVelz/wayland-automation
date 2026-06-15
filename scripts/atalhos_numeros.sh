@@ -5,8 +5,8 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
-# shellcheck source=lib/common.sh
-source "${SCRIPT_DIR}/lib/common.sh"
+# shellcheck source=../core/lib/common.sh
+source "${PROJECT_DIR}/core/lib/common.sh"
 
 usage() {
     cat <<EOF
@@ -69,7 +69,7 @@ main() {
         : # ydotoold activo
     else
         echo "Advertencia: ydotoold no activo; los pasos de macro (steps) fallarán." >&2
-        echo "Inicia: ./scripts/ydotoold.sh start" >&2
+        echo "Inicia: ./core/prender.sh" >&2
         echo
     fi
 

@@ -11,7 +11,7 @@ Automatización en **Arch Linux + Sway** con scripts shell y Python auxiliar (`p
 
 | Rama | Contenido |
 |------|-----------|
-| **`script`** | Solo terminal: `scripts/`, `docs/`, `systemd/` |
+| **`script`** | Solo terminal: `core/`, `scripts/`, `docs/`, `systemd/` |
 | **`main`** | Lo anterior + GUI Tauri (React + Rust en `src/`, `src-tauri/`) |
 
 Antes de editar, comprobar la rama activa (`git branch --show-current`). En **`script`** no añadir ni referenciar Tauri, React, pnpm ni Node.
@@ -19,10 +19,14 @@ Antes de editar, comprobar la rama activa (`git branch --show-current`). En **`s
 ## Estructura clave
 
 ```text
-scripts/*.sh              # entradas CLI (bash, set -euo pipefail)
-scripts/lib/common.sh     # Wayland, wl-find-cursor, ydotool, grim
-scripts/lib/*.py          # evdev (grabar_posiciones, atalhos_numeros)
+core/*.sh                 # infraestructura: setup, daemon (bash, set -euo pipefail)
+core/prender.sh, apagar.sh
+core/lib/common.sh        # Wayland, wl-find-cursor, ydotool, grim
+scripts/*.sh              # uso diario: atajos, macros
+scripts/lib/*.py          # evdev (atalhos_numeros)
 scripts/config/           # atalhos.json (local), .example en git
+scripts/tools/*.sh        # herramientas prescindibles / experimentales
+scripts/tools/lib/*.py    # evdev auxiliar (grabar_posiciones)
 bin/wl-find-cursor        # compilado por setup.sh (ignorado)
 systemd/ydotoold.service
 docs/                     # markdown en español
@@ -34,11 +38,11 @@ docs/                     # markdown en español
 - **Ratón/teclado virtual**: `ydotool` + daemon `ydotoold` (socket `/tmp/.ydotool_socket`)
 - **Captura/color**: `grim`, ImageMagick
 - **Teclas en escucha**: `python-evdev` (grupo `input`, `/dev/input/event*`)
-- **Setup**: `./scripts/setup.sh`
+- **Setup**: `./core/setup.sh`
 
 ## Convenciones generales
 
 - Mensajes de usuario y docs en **español**; commits en **inglés** (Conventional Commits).
 - Cambios mínimos y enfocados; reutilizar `common.sh` y el formato JSON de macros existente.
-- Config local del usuario (`scripts/config/atalhos.json`, logs) no va a git.
+- Config local del usuario (`scripts/config/atalhos.json`, logs en `scripts/tools/config/`) no va a git.
 - No commitear `.env`, credenciales ni `bin/wl-find-cursor`.
