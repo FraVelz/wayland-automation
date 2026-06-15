@@ -52,6 +52,8 @@ Controles en la terminal:
 - **1** o **Ctrl** → guarda posición actual (mover + clic izquierdo al reproducir)
 - **2** → igual que 1, pero con clic derecho
 - **0** → reproduce toda la secuencia
+- **9** → borra el último punto guardado
+- **q** → activa/desactiva la captura de números (para poder escribirlos)
 - **Esc** → vacía la secuencia
 - **Ctrl+C** → sale y detiene procesos en segundo plano
 

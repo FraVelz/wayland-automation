@@ -14,6 +14,7 @@ DEBOUNCE_S=0.4
 LOCK_FILE="/tmp/wayland-automation-macro_gui-${USER}.lock"
 DEBOUNCE_FILE="/tmp/wayland-automation-macro-debounce-${USER}"
 STATUS_FILE="/tmp/wayland-automation-macro-status-${USER}"
+CAPTURE_FILE="/tmp/wayland-automation-macro-capture-${USER}"
 RUNNING_FILE=""
 
 declare -a STEPS=()
@@ -30,6 +31,8 @@ Controles (teclado global):
   1 o Ctrl  Guarda el punto actual (mover + clic izquierdo al reproducir)
   2         Igual que 1, pero con clic derecho
   0         Reproduce toda la secuencia guardada
+  9         Borra el último punto guardado
+  q         Activa/desactiva la captura de números (0–9)
   Esc       Vacía la secuencia
   Ctrl+C    Sale y persiste el JSON
 
@@ -71,6 +74,38 @@ touch_action() {
 update_status() {
     STATUS_MSG="$1"
     printf '%s' "$1" >"${STATUS_FILE}"
+}
+
+capture_numbers_enabled() {
+    [[ ! -f "${CAPTURE_FILE}" || "$(cat "${CAPTURE_FILE}")" != "0" ]]
+}
+
+capture_status_label() {
+    if capture_numbers_enabled; then
+        echo "activada"
+    else
+        echo "desactivada"
+    fi
+}
+
+set_capture_numbers() {
+    if [[ "$1" == true ]]; then
+        printf '1' >"${CAPTURE_FILE}"
+    else
+        printf '0' >"${CAPTURE_FILE}"
+    fi
+}
+
+toggle_capture_numbers() {
+    if capture_numbers_enabled; then
+        set_capture_numbers false
+        update_status "Captura de números desactivada (q para activar)"
+        notify "Macro" "Captura de números desactivada — puedes escribir números"
+    else
+        set_capture_numbers true
+        update_status "Captura de números activada (q para desactivar)"
+        notify "Macro" "Captura de números activada"
+    fi
 }
 
 run_ydotool() {
@@ -169,11 +204,14 @@ RGB: ${rgb}
 
 Puntos guardados: ${n}
 Estado: ${STATUS_MSG}
+Captura números: $(capture_status_label) (q para alternar)
 
 Controles:
   1 o Ctrl  → guardar punto (mover + clic izquierdo)
   2         → guardar punto (mover + clic derecho)
   0         → reproducir secuencia
+  9         → borrar último punto
+  q         → activar/desactivar captura de números
   Esc       → vaciar secuencia
 EOF
 }
@@ -221,6 +259,36 @@ clear_sequence() {
     write_macro
     update_status "Secuencia vaciada"
     notify "Macro" "Secuencia vaciada"
+}
+
+remove_last_point() {
+    local i n last_move=-1 t remaining
+    if debounced; then
+        return 0
+    fi
+    touch_action
+    load_macro
+    n=${#STEPS[@]}
+    if [[ $n -eq 0 ]]; then
+        update_status "No hay puntos que borrar"
+        notify "Macro" "No hay puntos que borrar"
+        return 1
+    fi
+    for ((i = 0; i < n; i++)); do
+        t="$(echo "${STEPS[$i]}" | sed -n 's/.*"type"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p')"
+        [[ "${t}" == "move_absolute" ]] && last_move=$i
+    done
+    if [[ $last_move -lt 0 ]]; then
+        update_status "Secuencia sin puntos válidos"
+        notify "Macro" "No se encontró ningún punto"
+        return 1
+    fi
+    remaining=("${STEPS[@]:0:$last_move}")
+    STEPS=("${remaining[@]}")
+    write_macro
+    n="$(point_count)"
+    update_status "Último punto borrado (${n} restante(s))"
+    notify "Macro" "Último punto borrado. Quedan ${n} punto(s)."
 }
 
 run_sequence() {
@@ -321,7 +389,7 @@ stop_all_instances() {
     done < <(pgrep -x evtest 2>/dev/null || true)
     rm -f /tmp/wayland-automation-macro_gui-"${USER}".lock \
         /tmp/wayland-automation-macro-running.* \
-        "${DEBOUNCE_FILE}" "${STATUS_FILE}"
+        "${DEBOUNCE_FILE}" "${STATUS_FILE}" "${CAPTURE_FILE}"
     echo "Instancias de macro_gui detenidas."
 }
 
@@ -347,16 +415,25 @@ _evtest_worker() {
 handle_key_line() {
     local line="$1" code
     [[ "${line}" == *"(EV_KEY)"* && "${line}" == *"value 1"* ]] || return 0
+    code="$(echo "${line}" | sed -n 's/.*code \([0-9]*\).*/\1/p')"
+    case "${code}" in
+        16) toggle_capture_numbers; return 0 ;;  # KEY_Q
+        1) clear_sequence; return 0 ;;          # KEY_ESC
+    esac
     if [[ "${line}" == *"KEY_LEFTCTRL"* || "${line}" == *"KEY_RIGHTCTRL"* ]]; then
         save_point "Ctrl" "left"
         return 0
     fi
-    code="$(echo "${line}" | sed -n 's/.*code \([0-9]*\).*/\1/p')"
+    if ! capture_numbers_enabled; then
+        case "${code}" in
+            2|3|10|11|79|80|87|82) return 0 ;;  # 1,2,9,0 y teclado numérico
+        esac
+    fi
     case "${code}" in
-        2|79) save_point "1" "left" ;;   # KEY_1, KEY_KP1
-        3|80) save_point "2" "right" ;;  # KEY_2, KEY_KP2
-        11|82) run_sequence ;;           # KEY_0, KEY_KP0
-        1) clear_sequence ;;     # KEY_ESC
+        2|79) save_point "1" "left" ;;    # KEY_1, KEY_KP1
+        3|80) save_point "2" "right" ;;   # KEY_2, KEY_KP2
+        10|87) remove_last_point ;;       # KEY_9, KEY_KP9
+        11|82) run_sequence ;;            # KEY_0, KEY_KP0
     esac
 }
 
@@ -404,7 +481,7 @@ kill_tree() {
 }
 
 cleanup() {
-    rm -f "${RUNNING_FILE}" "${DEBOUNCE_FILE}" "${STATUS_FILE}"
+    rm -f "${RUNNING_FILE}" "${DEBOUNCE_FILE}" "${STATUS_FILE}" "${CAPTURE_FILE}"
     kill_tree "${EVTEST_PIDS[@]:-}"
     wait 2>/dev/null || true
     tput cnorm 2>/dev/null || true
@@ -466,6 +543,7 @@ main() {
     acquire_lock
     RUNNING_FILE="$(mktemp /tmp/wayland-automation-macro-running.XXXXXX)"
     load_macro
+    set_capture_numbers true
     update_status "Listo"
     trap cleanup EXIT INT TERM
     start_evtest_listeners

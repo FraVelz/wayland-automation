@@ -45,6 +45,8 @@ Más: [daemon.md](daemon.md).
 | **1** o **Ctrl** | Guarda punto actual → mover + clic izquierdo al reproducir |
 | **2** | Igual que 1, pero con clic derecho |
 | **0** | Reproduce toda la secuencia |
+| **9** | Borra el último punto guardado |
+| **q** | Activa/desactiva la captura de números (0–9) |
 | **Esc** | Vacía la secuencia |
 | **--clear** | Vacía `scripts/config/macro_gui.json` y sale |
 | **Ctrl+C** | Sale y persiste el JSON |
