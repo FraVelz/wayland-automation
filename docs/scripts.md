@@ -42,7 +42,8 @@ Más: [daemon.md](daemon.md).
 
 | Tecla / flag | Acción |
 |--------------|--------|
-| **1** o **Ctrl** | Guarda punto actual → mover + clic al reproducir |
+| **1** o **Ctrl** | Guarda punto actual → mover + clic izquierdo al reproducir |
+| **2** | Igual que 1, pero con clic derecho |
 | **0** | Reproduce toda la secuencia |
 | **Esc** | Vacía la secuencia |
 | **--clear** | Vacía `scripts/config/macro_gui.json` y sale |

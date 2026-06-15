@@ -39,7 +39,7 @@ Comprobar el daemon:
 
 | Script | Función |
 |--------|---------|
-| `macro_gui.sh` | Terminal con cursor/color; guarda puntos (1/Ctrl) y reproduce (0) |
+| `macro_gui.sh` | Terminal con cursor/color; guarda puntos (1/Ctrl izq., 2 der.) y reproduce (0) |
 
 ```bash
 ./core/prender.sh
@@ -49,7 +49,8 @@ Comprobar el daemon:
 ```
 
 Controles en la terminal:
-- **1** o **Ctrl** → guarda posición actual (mover + clic al reproducir)
+- **1** o **Ctrl** → guarda posición actual (mover + clic izquierdo al reproducir)
+- **2** → igual que 1, pero con clic derecho
 - **0** → reproduce toda la secuencia
 - **Esc** → vacía la secuencia
 - **Ctrl+C** → sale y detiene procesos en segundo plano

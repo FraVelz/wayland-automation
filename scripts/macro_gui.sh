@@ -27,7 +27,8 @@ Uso: $(basename "$0") [opciones]
 Muestra posición y color del cursor en la terminal.
 
 Controles (teclado global):
-  1 o Ctrl  Guarda el punto actual (mover + clic al reproducir)
+  1 o Ctrl  Guarda el punto actual (mover + clic izquierdo al reproducir)
+  2         Igual que 1, pero con clic derecho
   0         Reproduce toda la secuencia guardada
   Esc       Vacía la secuencia
   Ctrl+C    Sale y persiste el JSON
@@ -170,14 +171,15 @@ Puntos guardados: ${n}
 Estado: ${STATUS_MSG}
 
 Controles:
-  1 o Ctrl  → guardar punto (mover + clic)
+  1 o Ctrl  → guardar punto (mover + clic izquierdo)
+  2         → guardar punto (mover + clic derecho)
   0         → reproducir secuencia
   Esc       → vaciar secuencia
 EOF
 }
 
 save_point() {
-    local trigger="$1" pos x y n msg
+    local trigger="$1" button="${2:-left}" pos x y n msg btn_label
     if debounced; then
         return 0
     fi
@@ -189,12 +191,17 @@ save_point() {
         return 1
     }
     read -r x y <<<"${pos}"
+    case "${button}" in
+        left) btn_label="izquierdo" ;;
+        right) btn_label="derecho" ;;
+        *) btn_label="${button}" ;;
+    esac
     STEPS+=("{\"type\": \"move_absolute\", \"x\": ${x}, \"y\": ${y}}")
-    STEPS+=("{\"type\": \"click\", \"button\": \"left\"}")
+    STEPS+=("{\"type\": \"click\", \"button\": \"${button}\"}")
     STEPS+=("{\"type\": \"delay\", \"ms\": 250}")
     write_macro
     n="$(point_count)"
-    msg="Punto ${n} guardado: (${x}, ${y}) [${trigger}]"
+    msg="Punto ${n} guardado: (${x}, ${y}) [${trigger}, clic ${btn_label}]"
     update_status "${msg}"
     notify "Macro guardada" "${msg}"
 }
@@ -341,13 +348,14 @@ handle_key_line() {
     local line="$1" code
     [[ "${line}" == *"(EV_KEY)"* && "${line}" == *"value 1"* ]] || return 0
     if [[ "${line}" == *"KEY_LEFTCTRL"* || "${line}" == *"KEY_RIGHTCTRL"* ]]; then
-        save_point "Ctrl"
+        save_point "Ctrl" "left"
         return 0
     fi
     code="$(echo "${line}" | sed -n 's/.*code \([0-9]*\).*/\1/p')"
     case "${code}" in
-        2|79) save_point "1" ;;   # KEY_1, KEY_KP1
-        11|82) run_sequence ;;    # KEY_0, KEY_KP0
+        2|79) save_point "1" "left" ;;   # KEY_1, KEY_KP1
+        3|80) save_point "2" "right" ;;  # KEY_2, KEY_KP2
+        11|82) run_sequence ;;           # KEY_0, KEY_KP0
         1) clear_sequence ;;     # KEY_ESC
     esac
 }
