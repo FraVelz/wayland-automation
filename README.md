@@ -1,8 +1,6 @@
 # Wayland Automation — Scripts (Sway)
 
-Automatización en **Arch Linux + Sway** solo con scripts shell: posición del cursor, movimiento del ratón, atajos numéricos y gestión de `ydotoold`.
-
-> Esta es la rama **`script`**: terminal únicamente, sin GUI (Tauri/React está en **`main`**).
+Automatización en **Arch Linux + Sway** con scripts shell: posición del cursor, macros de clic y gestión de `ydotoold`.
 
 ## Requisitos
 
@@ -15,8 +13,7 @@ Automatización en **Arch Linux + Sway** solo con scripts shell: posición del c
 ```bash
 git clone https://github.com/FraVelz/wayland-automation.git
 cd wayland-automation
-git checkout script
-chmod +x core/*.sh scripts/*.sh scripts/tools/*.sh
+chmod +x core/*.sh scripts/*.sh
 ./core/setup.sh   # no uses sudo en el script completo; pedirá sudo internamente
 ```
 
@@ -56,19 +53,6 @@ Controles en la terminal:
 - **0** → reproduce toda la secuencia
 - **Esc** → vacía la secuencia
 - **Ctrl+C** → sale y detiene procesos en segundo plano
-
-## Tools (herramientas prescindibles)
-
-| Script | Función |
-|--------|---------|
-| `tools/cursor.sh` | Coordenadas del cursor (y color con `-c`) |
-| `tools/grabar_posiciones.sh` | Registra teclas/clics y coordenadas |
-| `tools/mover_raton.sh` | Mueve el ratón (prueba de ydotool) |
-
-```bash
-./scripts/tools/cursor.sh -w
-./scripts/tools/grabar_posiciones.sh
-```
 
 ## Documentación
 

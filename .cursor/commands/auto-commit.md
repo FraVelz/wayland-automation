@@ -22,30 +22,29 @@ Cumplir [`.cursor/rules/git-commits.mdc`](../rules/git-commits.mdc).
 2. `git diff` — qué entra en el commit.
 3. `git log -15 --oneline` — tono reciente.
 4. **Respetar borrados:** si el diff elimina líneas o archivos, **no restaurarlos** ni "arreglar" el contenido antes del commit salvo petición explícita del usuario. Un borrado suele ser intencional.
-5. Confirmar rama: en **`script`** no deben entrar archivos de Tauri/Node/React.
+5. Confirmar rama: **`main`** (solo scripts shell; no Tauri/Node/React).
 
-**No** incluir: `bin/wl-find-cursor`, `.build/`, `scripts/config/atalhos.json`, logs, credenciales.
+**No** incluir: `bin/wl-find-cursor`, `.build/`, `scripts/config/macro_gui.json`, logs, credenciales.
 
 ## Scopes habituales
 
 `scripts`, `cursor`, `daemon`, `macros`, `hotkeys`, `setup`, `systemd`, `docs`, `cursor` (config agente), `deps`.
 
-Rutas: `core/`, `scripts/`, `scripts/tools/`, `docs/`, `systemd/`, `.cursor/`.
+Rutas: `core/`, `scripts/`, `docs/`, `systemd/`, `.cursor/`.
 
 ## Ejemplos
 
 ```text
-feat(scripts): add numeric hotkeys listener via evdev
-fix(scripts): dedupe keyboard events on multi-device setups
-docs(scripts): document grabar_posiciones and atalhos flow
-chore(cursor): align agent rules for script-only branch
+feat(scripts): add macro_gui terminal recorder via evtest
+fix(daemon): detect stale ydotoold socket before playback
+docs(scripts): document macro_gui controls and setup flow
 ```
 
 ## Commit (obligatorio con `-F`)
 
 ```bash
 cat > /tmp/commit-msg.txt <<'EOF'
-feat(scripts): add grabar_posiciones and atalhos_numeros
+feat(scripts): add macro_gui with reliable cursor playback
 EOF
 git commit -F /tmp/commit-msg.txt
 git log -1 --format=%B

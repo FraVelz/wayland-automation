@@ -5,7 +5,7 @@
 Levanta el entorno. Cargan `core/lib/common.sh`.
 
 ```bash
-chmod +x core/*.sh scripts/*.sh scripts/tools/*.sh
+chmod +x core/*.sh scripts/*.sh
 ./core/setup.sh
 ```
 
@@ -49,31 +49,5 @@ Más: [daemon.md](daemon.md).
 | **Ctrl+C** | Sale y persiste el JSON |
 
 Cada punto guardado genera una notificación (`notify-send`).
-
-## Tools (`scripts/tools/`) — prescindibles
-
-Herramientas de apoyo. Cargan `core/lib/common.sh`.
-
-### Cursor (`cursor.sh`)
-
-```bash
-./scripts/tools/cursor.sh -w
-./scripts/tools/cursor.sh -c
-./scripts/tools/cursor.sh --json -c
-```
-
-### Mover ratón (`mover_raton.sh`)
-
-```bash
-./scripts/tools/mover_raton.sh --x 500 --y 300
-```
-
-### Grabar coordenadas (`grabar_posiciones.sh`)
-
-```bash
-./scripts/tools/grabar_posiciones.sh
-```
-
-Salida: `scripts/tools/config/grabacion.log` y `scripts/tools/config/macro_generado.json`.
 
 Volver al [índice](overview.md).

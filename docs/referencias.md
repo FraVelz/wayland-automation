@@ -9,6 +9,6 @@
 
 ## Repositorio
 
-- [FraVelz/wayland-automation](https://github.com/FraVelz/wayland-automation) — rama **`script`** (shell), rama **`main`** (GUI Tauri)
+- [FraVelz/wayland-automation](https://github.com/FraVelz/wayland-automation) — rama **`main`**
 
 Volver al [índice](overview.md).

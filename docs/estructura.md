@@ -1,6 +1,6 @@
 # Estructura del proyecto
 
-Rama **`script`**: automatización Wayland solo con scripts shell.
+Automatización Wayland solo con scripts shell (rama **`main`**).
 
 ```text
 wayland-automation/
@@ -14,20 +14,12 @@ wayland-automation/
 │   ├── apagar.sh
 │   └── lib/
 │       └── common.sh
-├── scripts/                      # uso diario (permanente)
-│   ├── atalhos_numeros.sh
-│   ├── ejecutar_macro.sh
+├── scripts/                      # uso diario
+│   ├── macro_gui.sh
 │   ├── lib/
-│   │   ├── input_common.py
-│   │   └── atalhos_numeros.py
-│   ├── config/
-│   │   └── atalhos.json.example
-│   └── tools/                    # prescindibles / experimentales
-│       ├── cursor.sh
-│       ├── grabar_posiciones.sh
-│       ├── mover_raton.sh
-│       └── lib/
-│           └── grabar_posiciones.py
+│   │   └── input_common.py
+│   └── config/
+│       └── macro_gui.json        # local (gitignore)
 ├── bin/wl-find-cursor            # compilado por setup.sh
 ├── systemd/ydotoold.service
 └── .gitignore
@@ -39,8 +31,6 @@ wayland-automation/
 |-------------------|--------|
 | `.build/` | Clon temporal para compilar wl-find-cursor |
 | `bin/wl-find-cursor` | Binario local (no en git) |
-| `scripts/config/atalhos.json` | Config local de atajos |
-| `scripts/tools/config/macro_generado.json` | Macro grabada con F9 |
-| `scripts/tools/config/grabacion.log` | Log de grabación |
+| `scripts/config/macro_gui.json` | Macro guardada por el usuario |
 
 Volver al [índice](overview.md).

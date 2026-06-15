@@ -16,22 +16,18 @@ Ejecutar cuando sea posible (sin `--no-verify`, sin alterar `git config`):
 
 ```bash
 git branch --show-current
-bash -n core/*.sh scripts/*.sh scripts/tools/*.sh
-python3 -m py_compile scripts/lib/*.py scripts/tools/lib/*.py 2>/dev/null || true
+bash -n core/*.sh scripts/*.sh
+python3 -m py_compile scripts/lib/*.py 2>/dev/null || true
 ./core/ydotoold.sh check 2>/dev/null || true
-./scripts/tools/cursor.sh --help
-./scripts/tools/grabar_posiciones.sh --help
-./scripts/atalhos_numeros.sh --help
+./scripts/macro_gui.sh --help
 ```
-
-En rama **`main`** adicionalmente (si existen): `pnpm lint`, `pnpm tauri build` — solo si el usuario está en esa rama.
 
 ## Factores y prioridades
 
 | Nivel | Etiqueta | Criterio |
 |-------|----------|----------|
-| **P0** | Crítico | Scripts rotos, `set -e` sin manejar errores graves, secretos en git, Tauri mezclado en rama `script` |
-| **P1** | Alto | `ydotoold`/permisos mal documentados, JSON de macro inválido, evdev sin grupo `input`, docs desalineadas con scripts |
+| **P0** | Crítico | Scripts rotos, `set -e` sin manejar errores graves, secretos en git |
+| **P1** | Alto | `ydotoold`/permisos mal documentados, JSON de macro inválido, evtest sin grupo `input`, docs desalineadas con scripts |
 | **P2** | Medio | Duplicación bash/python, falta de `usage()`, inconsistencias en `common.sh` |
 | **P3** | Bajo | Typos en docs, mensajes poco claros, mejoras opcionales |
 
@@ -43,20 +39,20 @@ En rama **`main`** adicionalmente (si existen): `pnpm lint`, `pnpm tauri build` 
 - Socket `YDOTOOL_SOCKET`, grupo `input`, `/dev/uinput`
 - Wrappers bash ↔ Python (`PYTHONPATH`, `WL_FIND_CURSOR`)
 
-### 2. Macros y atajos (P1)
+### 2. Macros (P1)
 
-- Formato JSON en `ejecutar_macro.sh`, `atalhos_numeros.py`, `atalhos.json.example`
-- Deduplicación evdev, placeholders de `command` en config
+- Formato JSON en `macro_gui.sh` / `scripts/config/macro_gui.json`
+- Deduplicación evtest, puntero ydotool (`accel_profile flat`)
 
 ### 3. Documentación (P1–P2)
 
 - `README.md`, `docs/scripts.md`, `docs/solucion-problemas.md`
-- Referencias obsoletas a Tauri/pnpm en rama `script`
+- Referencias obsoletas a ramas, tools o scripts eliminados
 - Comandos de ejemplo ejecutables
 
 ### 4. Git e higiene (P2–P3)
 
-- Archivos locales en staging (`atalhos.json`, logs, `bin/`)
+- Archivos locales en staging (`macro_gui.json`, logs, `bin/`)
 - `.gitignore` coherente
 
 ### 5. Agente Cursor (P3)

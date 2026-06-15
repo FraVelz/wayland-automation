@@ -12,24 +12,23 @@ Usar cuando el usuario invoque **`/update-docs`**, adjunte este archivo o pida a
 
 - Documentación en **`docs/`** (un solo idioma, español).
 - **`README.md`** en la raíz.
-- En rama **`script`**: no documentar Tauri/React salvo en la nota de ramas.
-- En rama **`main`**: incluir sección GUI si existe en el README de esa rama.
+- Rama **`main`**: solo scripts shell (sin Tauri/React).
 
 ## Fuentes de verdad al actualizar
 
 | Tema | Contrastar con |
 |------|----------------|
-| Scripts y flags | `core/*.sh`, `scripts/*.sh`, `scripts/tools/*.sh`, `scripts/lib/` |
+| Scripts y flags | `core/*.sh`, `scripts/*.sh`, `scripts/lib/` |
 | Instalación / paquetes | `core/setup.sh` |
 | Daemon | `core/ydotoold.sh`, `core/prender.sh`, `systemd/`, `docs/daemon.md` |
-| Atajos y macros | `scripts/config/atalhos.json.example`, `docs/scripts.md` |
+| Macros | `scripts/macro_gui.sh`, `scripts/config/macro_gui.json`, `docs/scripts.md` |
 | Estructura | `docs/estructura.md`, árbol real del repo |
 | Problemas frecuentes | `docs/solucion-problemas.md` |
 
 ## Pasos para el agente
 
 1. Leer los archivos `@` indicados (o `README.md` + `docs/` si pidió barrido).
-2. Explorar el repo y detectar discrepancias (scripts nuevos, rutas obsoletas, referencias a Tauri en rama `script`).
+2. Explorar el repo y detectar discrepancias (scripts nuevos, rutas obsoletas, referencias a ramas o tools eliminados).
 3. Corregir redacción sin cambiar alcance técnico salvo que el código haya cambiado.
 4. Mantener tablas y bloques de código ejecutables **copiables** (comandos completos).
 5. Resumen al usuario: archivos tocados y cambios factuales.

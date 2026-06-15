@@ -1,5 +1,5 @@
 ---
-description: Convenciones para scripts shell y Python en core/, scripts/ y scripts/tools/
+description: Convenciones para scripts shell y Python en core/ y scripts/
 globs: core/**,scripts/**
 alwaysApply: false
 ---
@@ -10,19 +10,17 @@ alwaysApply: false
 
 - Cabecera: `#!/usr/bin/env bash`, `set -euo pipefail`.
 - **Core** (`core/*.sh`): cargar `core/lib/common.sh` con ruta relativa.
-- **Scripts** (`scripts/*.sh`, `scripts/tools/*.sh`): cargar `${PROJECT_DIR}/core/lib/common.sh`.
+- **Scripts** (`scripts/*.sh`): cargar `${PROJECT_DIR}/core/lib/common.sh`.
 - Funciones compartidas en `core/lib/common.sh`; no duplicar `require_wayland`, `get_cursor_pos`, etc.
 - Mensajes de error a **stderr**; `usage()` con heredoc; salida limpia a stdout cuando aplique.
 - Permisos: `chmod +x` en scripts nuevos; mencionar en docs si añades dependencia de pacman.
 
 ## Python
 
-- **Scripts** (`scripts/lib/*.py`): Python 3 + `evdev`; invocado desde wrapper en `scripts/`.
-- **Tools** (`scripts/tools/lib/*.py`): añadir `scripts/lib` al `PYTHONPATH` para `input_common`.
-- Pasar `WL_FIND_CURSOR` desde el wrapper bash para coordenadas.
+- **Scripts** (`scripts/lib/*.py`): Python 3 + `evdev`; utilidades compartidas.
+- Pasar `WL_FIND_CURSOR` desde el wrapper bash para coordenadas cuando aplique.
 - **No** usar `grab()` en dispositivos evdev (el usuario debe seguir usando el teclado/ratón).
-- Deduplicar eventos si hay varios teclados (~40 ms).
-- Formato de pasos de macro (compatible con `ejecutar_macro.sh`):
+- Formato de pasos de macro (`macro_gui.json`):
 
 ```json
 {"type": "delay", "ms": 200}
@@ -33,14 +31,13 @@ alwaysApply: false
 ## Dónde va cada script
 
 1. **Infraestructura** (setup, daemon) → `core/`.
-2. **Uso diario** (atajos, macros) → `scripts/`.
-3. **Prescindible / experimental** → `scripts/tools/`.
+2. **Uso diario** (macros) → `scripts/`.
 
 ## Comprobar manualmente
 
 ```bash
 ./core/ydotoold.sh status
-./scripts/tools/cursor.sh --help
-python3 -m py_compile scripts/lib/*.py scripts/tools/lib/*.py
-bash -n core/*.sh scripts/*.sh scripts/tools/*.sh
+./scripts/macro_gui.sh --help
+python3 -m py_compile scripts/lib/*.py
+bash -n core/*.sh scripts/*.sh
 ```

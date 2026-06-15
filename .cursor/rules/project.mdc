@@ -1,20 +1,13 @@
 ---
-description: Contexto del repo wayland-automation (rama script, stack Wayland)
+description: Contexto del repo wayland-automation (stack Wayland, scripts shell)
 alwaysApply: true
 ---
 
 # Wayland Automation
 
-Automatización en **Arch Linux + Sway** con scripts shell y Python auxiliar (`python-evdev`).
+Automatización en **Arch Linux + Sway** con scripts shell (bash) y Python auxiliar (`python-evdev`).
 
-## Ramas
-
-| Rama | Contenido |
-|------|-----------|
-| **`script`** | Solo terminal: `core/`, `scripts/`, `docs/`, `systemd/` |
-| **`main`** | Lo anterior + GUI Tauri (React + Rust en `src/`, `src-tauri/`) |
-
-Antes de editar, comprobar la rama activa (`git branch --show-current`). En **`script`** no añadir ni referenciar Tauri, React, pnpm ni Node.
+Rama principal: **`main`** (solo terminal, sin GUI).
 
 ## Estructura clave
 
@@ -22,11 +15,9 @@ Antes de editar, comprobar la rama activa (`git branch --show-current`). En **`s
 core/*.sh                 # infraestructura: setup, daemon (bash, set -euo pipefail)
 core/prender.sh, apagar.sh
 core/lib/common.sh        # Wayland, wl-find-cursor, ydotool, grim
-scripts/*.sh              # uso diario: atajos, macros
-scripts/lib/*.py          # evdev (atalhos_numeros)
-scripts/config/           # atalhos.json (local), .example en git
-scripts/tools/*.sh        # herramientas prescindibles / experimentales
-scripts/tools/lib/*.py    # evdev auxiliar (grabar_posiciones)
+scripts/*.sh              # uso diario: macros
+scripts/lib/*.py          # utilidades evdev compartidas
+scripts/config/           # macro_gui.json (local, ignorado en git)
 bin/wl-find-cursor        # compilado por setup.sh (ignorado)
 systemd/ydotoold.service
 docs/                     # markdown en español
@@ -37,12 +28,12 @@ docs/                     # markdown en español
 - **Coordenadas**: `wl-find-cursor` (Sway)
 - **Ratón/teclado virtual**: `ydotool` + daemon `ydotoold` (socket `/tmp/.ydotool_socket`)
 - **Captura/color**: `grim`, ImageMagick
-- **Teclas en escucha**: `python-evdev` (grupo `input`, `/dev/input/event*`)
+- **Teclas en escucha**: `evtest` (grupo `input`, `/dev/input/event*`)
 - **Setup**: `./core/setup.sh`
 
 ## Convenciones generales
 
 - Mensajes de usuario y docs en **español**; commits en **inglés** (Conventional Commits).
 - Cambios mínimos y enfocados; reutilizar `common.sh` y el formato JSON de macros existente.
-- Config local del usuario (`scripts/config/atalhos.json`, logs en `scripts/tools/config/`) no va a git.
+- Config local del usuario (`scripts/config/macro_gui.json`, logs) no va a git.
 - No commitear `.env`, credenciales ni `bin/wl-find-cursor`.

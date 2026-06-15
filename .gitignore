@@ -8,9 +8,7 @@ __pycache__/
 # Build / datos locales
 .build/
 bin/wl-find-cursor
-scripts/config/atalhos.json
 scripts/config/macro_gui.json
-scripts/tools/config/macro_generado.json
 
 # Sistema
 .DS_Store

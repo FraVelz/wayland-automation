@@ -1,11 +1,10 @@
 # Instalación
 
-## 1. Clonar la rama correcta
+## 1. Clonar
 
 ```bash
 git clone https://github.com/FraVelz/wayland-automation.git
 cd wayland-automation
-git checkout script
 ```
 
 ## 2. Setup del sistema
@@ -13,7 +12,7 @@ git checkout script
 Desde la raíz del repositorio:
 
 ```bash
-chmod +x core/*.sh scripts/*.sh scripts/tools/*.sh
+chmod +x core/*.sh scripts/*.sh
 ./core/setup.sh   # no uses sudo ./core/setup.sh
 ```
 
@@ -31,9 +30,10 @@ El script:
 | Paquete | Uso |
 |---------|-----|
 | `ydotool` | Control ratón/teclado |
-| `grim`, `slurp` | Captura Wayland (color con `-c` en CLI) |
+| `grim`, `slurp` | Captura Wayland (color del píxel en macro_gui) |
 | `imagemagick` | Color RGB/HEX del píxel |
-| `python-evdev` | Escuchar teclas en grabar/atalhos |
+| `evtest` | Escuchar teclas globales en macro_gui |
+| `python-evdev` | Utilidades Python compartidas |
 | `wayland-protocols`, `base-devel`, `git` | Compilar wl-find-cursor |
 
 ## 4. Permisos
