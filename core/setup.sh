@@ -55,7 +55,7 @@ if [[ "${EUID}" -ne 0 ]]; then
     echo
 fi
 
-PACKAGES=(ydotool grim slurp imagemagick wayland-protocols git base-devel python-evdev)
+PACKAGES=(ydotool grim slurp imagemagick wayland-protocols git base-devel python-evdev evtest)
 echo "==> Instalando paquetes: ${PACKAGES[*]}"
 run_sudo pacman -S --needed --noconfirm "${PACKAGES[@]}"
 
@@ -131,10 +131,7 @@ if [[ "${NEEDS_RELOGIN}" -eq 1 ]]; then
 else
     echo "  1. Verifica permisos:    ./core/ydotoold.sh check"
 fi
-echo "  2. Verifica el daemon:  ./core/ydotoold.sh status"
-echo "  3. Coordenadas:        ./scripts/tools/cursor.sh -w"
-echo "  4. Atajos numéricos:   ./scripts/tools/grabar_posiciones.sh"
-echo "                        cp scripts/config/atalhos.json.example scripts/config/atalhos.json"
-echo "                        ./scripts/atalhos_numeros.sh"
+echo "  2. Inicia el daemon:    ./core/prender.sh"
+echo "  3. Macro en terminal:  ./scripts/macro_gui.sh"
 echo
 echo "Documentación: README.md"

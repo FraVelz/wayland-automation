@@ -33,12 +33,16 @@ EOF
 }
 
 is_running() {
-    [[ -S "${YDOTOOL_SOCKET}" ]]
+    ydotoold_is_alive
 }
 
 daemon_pid() {
-    if [[ -S "${YDOTOOL_SOCKET}" ]]; then
-        lsof -t "${YDOTOOL_SOCKET}" 2>/dev/null | head -1 || true
+    ydotoold_socket_pid
+}
+
+remove_stale_socket() {
+    if ydotoold_remove_stale_socket; then
+        echo "Socket obsoleto eliminado (${YDOTOOL_SOCKET})."
     fi
 }
 
@@ -52,8 +56,11 @@ cmd_install() {
 cmd_start() {
     require_ydotool
 
+    remove_stale_socket
+
     if is_running; then
-        echo "ydotoold ya está activo (socket: ${YDOTOOL_SOCKET})"
+        configure_ydotoold_input
+        echo "ydotoold ya está activo (socket: ${YDOTOOL_SOCKET}, PID: $(daemon_pid))"
         return 0
     fi
 
@@ -62,6 +69,7 @@ cmd_start() {
         systemctl --user start "${SERVICE_NAME}"
         sleep 0.5
         if is_running; then
+            configure_ydotoold_input
             echo "ydotoold iniciado vía systemd --user"
             return 0
         fi
@@ -74,6 +82,7 @@ cmd_start() {
     sleep 0.5
 
     if is_running; then
+        configure_ydotoold_input
         echo "ydotoold iniciado (PID aprox: $(daemon_pid))"
     else
         echo "Error: no se pudo iniciar ydotoold." >&2
@@ -117,6 +126,10 @@ cmd_status() {
     if is_running; then
         echo "Estado:     ACTIVO"
         echo "PID:        $(daemon_pid)"
+    elif [[ -S "${YDOTOOL_SOCKET}" ]]; then
+        echo "Estado:     SOCKET OBSOLETO (sin daemon)"
+        echo "PID:        —"
+        echo "Acción:     ./core/ydotoold.sh restart"
     else
         echo "Estado:     INACTIVO"
     fi

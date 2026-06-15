@@ -11,6 +11,7 @@
 | Grupo `input` sí, `/dev/uinput` sin permisos | `sudo modprobe uinput && sudo udevadm trigger -c add -s misc -n uinput` o `./core/setup.sh` |
 | `wl-find-cursor no encontrado` | `./core/setup.sh` |
 | Coordenadas OK, ratón no se mueve | `./core/ydotoold.sh status`, grupo `input` |
+| Ratón va a posición incorrecta (X ok, Y abajo) | `./core/ydotoold.sh restart` (aplica `accel_profile flat` al puntero virtual) |
 | `invalid geometry` con grim | Formato Sway: `"X,Y 1x1"` |
 
 ```bash

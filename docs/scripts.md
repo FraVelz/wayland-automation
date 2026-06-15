@@ -27,38 +27,28 @@ Más: [daemon.md](daemon.md).
 
 ## Scripts (`scripts/`) — uso diario
 
-Funcionalidad principal. Cargan `core/lib/common.sh`.
-
 | Script | Función |
 |--------|---------|
-| `atalhos_numeros.sh` | Atajos numéricos 0–9 |
-| `ejecutar_macro.sh` | Ejecuta macros JSON |
+| `macro_gui.sh` | Terminal con cursor/color; guardar puntos y reproducir secuencia |
 
-### Atajos numéricos
-
-```bash
-cp scripts/config/atalhos.json.example scripts/config/atalhos.json
-./scripts/atalhos_numeros.sh
-```
-
-Formato en `atalhos.json`:
-
-```json
-"1": {
-  "label": "Mi atajo",
-  "command": "notify-send hola",
-  "steps": [
-    {"type": "move_absolute", "x": 500, "y": 300},
-    {"type": "click", "button": "left"}
-  ]
-}
-```
-
-### Macro desde JSON
+### Macro en terminal (`macro_gui.sh`)
 
 ```bash
-./scripts/ejecutar_macro.sh --file scripts/tools/config/macro_generado.json
+./core/prender.sh
+./scripts/macro_gui.sh
+./scripts/macro_gui.sh --clear
+./scripts/macro_gui.sh --stop
 ```
+
+| Tecla / flag | Acción |
+|--------------|--------|
+| **1** o **Ctrl** | Guarda punto actual → mover + clic al reproducir |
+| **0** | Reproduce toda la secuencia |
+| **Esc** | Vacía la secuencia |
+| **--clear** | Vacía `scripts/config/macro_gui.json` y sale |
+| **Ctrl+C** | Sale y persiste el JSON |
+
+Cada punto guardado genera una notificación (`notify-send`).
 
 ## Tools (`scripts/tools/`) — prescindibles
 

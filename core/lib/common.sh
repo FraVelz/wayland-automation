@@ -3,8 +3,8 @@
 
 set -euo pipefail
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_DIR="$(cd "${SCRIPT_DIR}/../.." && pwd)"
+_COMMON_LIB_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_DIR="$(cd "${_COMMON_LIB_DIR}/../.." && pwd)"
 
 export YDOTOOL_SOCKET="${YDOTOOL_SOCKET:-/tmp/.ydotool_socket}"
 
@@ -36,13 +36,40 @@ require_ydotool() {
     fi
 }
 
+# PID del proceso que escucha el socket (vacío si no hay daemon o el socket es obsoleto).
+ydotoold_socket_pid() {
+    if [[ -S "${YDOTOOL_SOCKET}" ]]; then
+        lsof -t "${YDOTOOL_SOCKET}" 2>/dev/null | head -1 || true
+    fi
+}
+
+ydotoold_is_alive() {
+    local pid
+    pid="$(ydotoold_socket_pid)"
+    [[ -n "${pid}" ]] && kill -0 "${pid}" 2>/dev/null
+}
+
+ydotoold_remove_stale_socket() {
+    if [[ -S "${YDOTOOL_SOCKET}" ]] && ! ydotoold_is_alive; then
+        rm -f "${YDOTOOL_SOCKET}"
+        return 0
+    fi
+    return 1
+}
+
 require_ydotoold() {
     require_ydotool
-    if [[ ! -S "${YDOTOOL_SOCKET}" ]]; then
+    if ydotoold_is_alive; then
+        return 0
+    fi
+    if [[ -S "${YDOTOOL_SOCKET}" ]]; then
+        echo "Error: socket ydotool obsoleto (${YDOTOOL_SOCKET})." >&2
+        echo "Reinicia el daemon: ./core/ydotoold.sh restart" >&2
+    else
         echo "Error: ydotoold no está activo (socket ${YDOTOOL_SOCKET} no existe)." >&2
         echo "Inicia el daemon: ./core/prender.sh" >&2
-        exit 1
     fi
+    exit 1
 }
 
 require_grim() {
@@ -97,4 +124,29 @@ detect_compositor() {
     else
         echo "wayland"
     fi
+}
+
+# ydotoold crea un puntero virtual; con accel "adaptive" las coordenadas absolutas fallan (sobre todo Y).
+configure_ydotoold_input() {
+    local id
+    if [[ "$(detect_compositor)" != "sway" ]] || ! command -v swaymsg >/dev/null 2>&1; then
+        return 0
+    fi
+    id="$(swaymsg -t get_inputs 2>/dev/null | python3 -c 'import json,sys
+for i in json.load(sys.stdin):
+    ident=i.get("identifier","")
+    if i.get("type")=="pointer" and "ydotool" in ident.lower():
+        print(ident); break' 2>/dev/null || true)"
+    [[ -n "${id}" ]] || return 0
+    swaymsg input "${id}" accel_profile flat pointer_accel 0 >/dev/null 2>&1 || true
+}
+
+# Mueve el cursor a coordenadas de layout de Sway (mismo espacio que wl-find-cursor).
+move_cursor_absolute() {
+    local x="$1" y="$2"
+    configure_ydotoold_input
+    # ydotool no conoce la posición actual; ir a (0,0) y mover en relativo es más fiable.
+    ydotool mousemove -- -999999 -999999 2>/dev/null || true
+    ydotool mousemove -- -999999 -999999 2>/dev/null || true
+    ydotool mousemove "${x}" "${y}"
 }

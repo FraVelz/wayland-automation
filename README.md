@@ -8,7 +8,7 @@ Automatización en **Arch Linux + Sway** solo con scripts shell: posición del c
 
 - Arch Linux con sesión **Sway** (Wayland)
 - `sudo` solo la primera vez (`./core/setup.sh`)
-- Grupo **`input`** y `ydotoold` activo para mover el ratón y escuchar teclas
+- Grupo **`input`**, **`evtest`** y `ydotoold` activo para reproducir macros
 
 ## Empezar
 
@@ -42,13 +42,20 @@ Comprobar el daemon:
 
 | Script | Función |
 |--------|---------|
-| `atalhos_numeros.sh` | Al pulsar 0–9 ejecuta comando/macro |
-| `ejecutar_macro.sh` | Ejecuta una macro desde JSON |
+| `macro_gui.sh` | Terminal con cursor/color; guarda puntos (1/Ctrl) y reproduce (0) |
 
 ```bash
-cp scripts/config/atalhos.json.example scripts/config/atalhos.json
-./scripts/atalhos_numeros.sh
+./core/prender.sh
+./scripts/macro_gui.sh
+./scripts/macro_gui.sh --clear   # vacía la macro guardada
+./scripts/macro_gui.sh --stop    # detiene instancias colgadas
 ```
+
+Controles en la terminal:
+- **1** o **Ctrl** → guarda posición actual (mover + clic al reproducir)
+- **0** → reproduce toda la secuencia
+- **Esc** → vacía la secuencia
+- **Ctrl+C** → sale y detiene procesos en segundo plano
 
 ## Tools (herramientas prescindibles)
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Utilidades evdev compartidas para scripts de atajos numéricos."""
+"""Utilidades evdev compartidas para scripts de automatización."""
 
 from __future__ import annotations
 
@@ -42,34 +42,11 @@ DIGIT_KEYS = {
     ecodes.KEY_KP9: "9",
 }
 
-MODIFIER_KEYS = {
-    ecodes.KEY_LEFTCTRL,
-    ecodes.KEY_RIGHTCTRL,
-    ecodes.KEY_LEFTALT,
-    ecodes.KEY_RIGHTALT,
-    ecodes.KEY_LEFTSHIFT,
-    ecodes.KEY_RIGHTSHIFT,
-    ecodes.KEY_LEFTMETA,
-    ecodes.KEY_RIGHTMETA,
-}
-
 CLICK_BUTTONS = {
     ecodes.BTN_LEFT: "left",
     ecodes.BTN_RIGHT: "right",
     ecodes.BTN_MIDDLE: "middle",
 }
-
-
-def key_name(code: int) -> str:
-    if code in DIGIT_KEYS:
-        return DIGIT_KEYS[code]
-    name = ecodes.KEY.get(code)
-    if name:
-        return name.replace("KEY_", "")
-    btn = ecodes.BTN.get(code)
-    if btn:
-        return btn.replace("BTN_", "")
-    return f"CODE_{code}"
 
 
 def get_cursor_pos() -> tuple[int, int] | None:
